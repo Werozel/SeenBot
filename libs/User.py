@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, VARCHAR
 from sqlalchemy.orm import relationship
 from globals import Base
-from Picture import Picture
+from libs.Picture import Picture
 
 class User(Base):
     __tablename__ = 'users'

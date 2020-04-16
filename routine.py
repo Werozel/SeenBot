@@ -1,5 +1,9 @@
-from globals import engine
-from User import User
-from Picture import Picture
+import globals
+from libs.User import User
+from libs.Picture import Picture
 
-print("Created")
+if __name__ == "__main__":
+    globals.Base.metadata.create_all(globals.engine)
+    print("Created")
+    print(globals.session)
+    globals.session.close()
