@@ -7,6 +7,9 @@ class Picture(Base):
 
     id = Column(DECIMAL, primary_key=True)
     link = Column(VARCHAR(50), unique=True, nullable=False)
-    up = Column(Integer, default=0)
-    down = Column(Integer, default=0)
+    ups = Column(Integer, default=0)
+    downs = Column(Integer, default=0)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    def __repr__(self):
+        return f"Picture {str(id)}: {str(self.ups)} ups, {str(self.downs)} downs"
