@@ -21,7 +21,7 @@ class User(Base):
     def __init__ (self, id: int, **kwargs):
         super(User, self).__init__(**kwargs)
         self.id = id
-        user: User = User.get(id)
+        user = User.get(id)
         if not user:
             user = api.users.get(user_ids=self.id)[0]
             self.first_name = user.get("first_name")
@@ -38,15 +38,18 @@ class User(Base):
             
 
     @staticmethod
-    def get(id:int) -> User:
+    def get(id:int):
         return session.query(User).filter_by(User.id==id).first()
 
-    def __eq__ (self, other: User) -> bool:
+    def get_pics(self):
+        return session.query(Picture).filter_by(Picture.id==self.id).all()
+
+    def __eq__ (self, other) -> bool:
         return self.id == other.id
 
     def __repr__(self) -> str:
         return f"User { str(self.id) }: {self.first_name} {self.last_name} - {str(self.ups)} ups, {str(self.downs)} downs, {str(self.all_pics)} all"
 
     # Returns latest pic sent by this user
-    def get_latest(self) -> Picture:
+    def get_latest_pic(self):
         pass
