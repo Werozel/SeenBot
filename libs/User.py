@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, VARCHAR
+from sqlalchemy import Column, Integer, VARCHAR, TIMESTAMP
 from sqlalchemy.orm import relationship
-from globals import Base
+from globals import Base, api, session, timestamp
 from libs.Picture import Picture
+from libs.Phrase import Phrase
 
 class User(Base):
     __tablename__ = 'users'
@@ -12,11 +13,38 @@ class User(Base):
     ups = Column(Integer, default=0)
     downs = Column(Integer, default=0)
     all_pics = Column(Integer, default=0)
+    add_time = Column(TIMESTAMP, default=timestamp())
 
     pic_rel = relationship("Picture", backref="user")
+    phrase_rel = relationship("Phrase", backref="user")
 
+    def __init__ (self, id: int, **kwargs):
+        super(User, self).__init__(**kwargs)
+        self.id = id
+        user: User = User.get(id)
+        if not user:
+            user = api.users.get(user_ids=self.id)[0]
+            self.first_name = user.get("first_name")
+            self.last_name = user.get("last_name")
+            self.ups = self.downs = self.all_pics = 0
+            self.add_time = timestamp()
+        else:
+            self.first_name = user.first_name
+            self.last_name = user.last_name
+            self.ups = user.ups
+            self.downs = user.downs
+            self.all_pics = user.all_pics
+            self.add_time = user.add_time
+            
 
-    def __repr__(self):
+    @staticmethod
+    def get(id:int) -> User:
+        return session.query(User).filter_by(User.id==id).first()
+
+    def __eq__ (self, other: User) -> bool:
+        return self.id == other.id
+
+    def __repr__(self) -> str:
         return f"User { str(self.id) }: {self.first_name} {self.last_name} - {str(self.ups)} ups, {str(self.downs)} downs, {str(self.all_pics)} all"
 
     # Returns latest pic sent by this user

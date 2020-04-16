@@ -2,9 +2,7 @@
 
 class Handler:
 
-    def __init__(self, command, process_func):
-        self.command = command
+    # check_func and process_func take message as an argument
+    def __init__(self, check_func, process_func):
+        self.check = check_func
         self.process = process_func
-
-    def invoke(self, **kwargs):
-        return self.process(**kwargs)
