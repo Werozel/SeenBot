@@ -13,12 +13,12 @@ class User(Base):
     downs = Column(Integer, default=0)
     all_pics = Column(Integer, default=0)
 
-    pic_rel = relationship("Picture")
+    pic_rel = relationship("Picture", backref="user")
 
 
     def __repr__(self):
         return f"User { str(self.id) }: {self.first_name} {self.last_name} - {str(self.ups)} ups, {str(self.downs)} downs, {str(self.all_pics)} all"
 
     # Returns latest pic sent by this user
-    def get_latest(self):
+    def get_latest(self) -> Picture:
         pass
