@@ -9,5 +9,5 @@ Bot for VK that helps to keep track of pictures already sent to chat
 * sqlalchemy
 * psycopg2
 
-Use ``pip install -r requirements.txt`` to install all modules
+Use ``pip3 install -r requirements.txt`` to install all modules
 
