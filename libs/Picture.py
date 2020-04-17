@@ -15,7 +15,7 @@ class Picture(Base):
     add_time = Column(TIMESTAMP, default=timestamp())
 
     picSize_rel = relationship("PictureSize", backref="picture")
-    msg_rel = relationship("Message", backref="picture")
+    msg_rel = relationship("PicMessage", backref="picture")
 
     def __init__ (self, user_id: int, **kwargs):
         super(Picture, self).__init__(**kwargs)

@@ -1,12 +1,13 @@
 import globals
 from libs.User import User
 from libs.Picture import Picture
-from src.handlers import handle_msg
 from vk_api.bot_longpoll import VkBotEventType
+import src.handler_func as handlers
 import traceback
 
 if __name__ == "__main__":
     globals.Base.metadata.create_all(globals.engine)
+    handlers.init_handlers()
     print("Created!")
 
 
@@ -16,7 +17,7 @@ if __name__ == "__main__":
                 print("New event!")
                 msg = event.obj.message
                 print(msg)
-                handle_msg(msg)
+                handlers.handle_msg(msg)
             raise Exception("Exit")
     except Exception as e:
         print(traceback.format_exc())
