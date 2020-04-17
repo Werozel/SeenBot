@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from globals import Base, timestamp, session
 from src.comparison import rmsCompare
 from libs.PictureSize import PictureSize
-from libs.Message import Message
+from libs.PicMessage import PicMessage
 
 class Picture(Base):
     __tablename__ = 'pictures'
@@ -27,12 +27,13 @@ class Picture(Base):
         return self.link == other.link
 
     @staticmethod
-    def get_by_link(link: str):
-        return session.query(Picture).filter_by(Picture.link == link).first()
-
-    @staticmethod
     def get(id: id):
         return session.query(Picture).filter_by(Picture.id == id).first()
+
+    def get_sizes(self):
+        return session.query(PictureSize).filter_by(PictureSize.pic_id == self.id).all()
+
+    
 
     # @staticmethod
     # def was_sent(picture) -> bool:

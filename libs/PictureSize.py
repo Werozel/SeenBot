@@ -1,4 +1,4 @@
-from globals import Base, timestamp
+from globals import Base, timestamp, session
 from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, DECIMAL, TIMESTAMP
 
 
@@ -20,4 +20,7 @@ class PictureSize(Base):
     def __repr__ (self):
         return f"Picture {self.pic_id} size: {self.size}, link - {self.link}"
 
+    @staticmethod
+    def get_by_link(link: str):
+        return session.query(PictureSize).filter_by(PictureSize.link == link).first()
     
