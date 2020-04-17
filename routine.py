@@ -15,6 +15,7 @@ if __name__ == "__main__":
             if event.type == VkBotEventType.MESSAGE_NEW and event.from_chat:
                 print("New event!")
                 msg = event.obj.message
+                print(msg)
                 handle_msg(msg)
             raise Exception("Exit")
     except Exception as e:
@@ -22,4 +23,4 @@ if __name__ == "__main__":
     
     globals.session.close()
     globals.engine.dispose()
-    globals.pool.close()
+    # globals.pool.close()

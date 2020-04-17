@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from globals import Base, api, session, timestamp
 from libs.Picture import Picture
 from libs.Phrase import Phrase
+from libs.Message import Message
 
 class User(Base):
     __tablename__ = 'users'
@@ -17,6 +18,7 @@ class User(Base):
 
     pic_rel = relationship("Picture", backref="user")
     phrase_rel = relationship("Phrase", backref="user")
+    msg_rel = relationship("Message", backref="user")
 
     def __init__ (self, id: int, **kwargs):
         super(User, self).__init__(**kwargs)
