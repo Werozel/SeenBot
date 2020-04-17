@@ -1,6 +1,7 @@
 import multiprocessing
 from libs.Handler import Handler
 import src.handlers.is_alive_handler as is_alive_handler
+import src.handlers.help_handler as help_handler
 
 handlers = []
 
@@ -16,4 +17,5 @@ def handle_msg(msg):
 
 def init_handlers():
     add_handler(is_alive_handler.handler)
+    add_handler(help_handler.handler)
 
