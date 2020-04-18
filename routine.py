@@ -16,7 +16,6 @@ if __name__ == "__main__":
             if event.type == VkBotEventType.MESSAGE_NEW and event.from_chat:
                 print("New event!")
                 msg = event.obj.message
-                print(msg)
                 handlers.handle_msg(msg)
             raise Exception("Exit")
     except Exception as e:

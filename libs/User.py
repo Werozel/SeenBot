@@ -41,10 +41,10 @@ class User(Base):
 
     @staticmethod
     def get(id:int):
-        return session.query(User).filter_by(User.id==id).first()
+        return session.query(User).filter(User.id==id).first()
 
     def get_pics(self):
-        return session.query(Picture).filter_by(Picture.id==self.id).all()
+        return session.query(Picture).filter(Picture.id==self.id).all()
 
     def __eq__ (self, other) -> bool:
         return self.id == other.id
