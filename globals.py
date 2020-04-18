@@ -19,8 +19,6 @@ vk_session = vk_api.VkApi(token=config.vk_secret)
 longpoll = VkBotLongPoll(vk_session, config.vk_groupId)
 api = vk_session.get_api()
 
-size_letters = ('m', 'o', 'p', 'q', 'r', 's', 'x', 'y', 'z')
-
 def worker_init():
     def handler(signum, stack):
         exit(0)
