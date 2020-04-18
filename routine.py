@@ -12,12 +12,12 @@ if __name__ == "__main__":
 
 
     try:
-        for event in globals.longpoll.listen():
-            if event.type == VkBotEventType.MESSAGE_NEW and event.from_chat:
-                print("New event!")
-                msg = event.obj.message
-                handlers.handle_msg(msg)
-            raise Exception("Exit")
+        while True:
+            for event in globals.longpoll.listen():
+                if event.type == VkBotEventType.MESSAGE_NEW and event.from_chat:
+                    print("New event!")
+                    msg = event.obj.message
+                    handlers.handle_msg(msg)
     except Exception as e:
         print(traceback.format_exc())
     
