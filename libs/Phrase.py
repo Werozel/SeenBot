@@ -1,6 +1,7 @@
 from globals import Base, timestamp, session
 from sqlalchemy import Column, ForeignKey, VARCHAR, TIMESTAMP, Integer
 import functools as func
+import random
 
 
 class Phrase(Base):
@@ -23,11 +24,18 @@ class Phrase(Base):
         return f"{self.id}: {self.text}\n"
 
     @staticmethod
-    def get_all():
-        phrase_list = list(map(str, session.query(Phrase).all()))
+    def get_all_list():
+        return list(map(str, session.query(Phrase).all()))
+
+    @staticmethod
+    def get_all_str():
+        phrase_list = Phrase.get_all_list
         return func.reduce(lambda a, b: a+b, phrase_list) if len(phrase_list) > 0 else ""
 
     @staticmethod
     def get(phrase_id: int):
         return session.query(Phrase).filter(Phrase.id == phrase_id).first()
 
+    @staticmethod
+    def get_random():
+        return random.choice(Phrase.get_all_list())

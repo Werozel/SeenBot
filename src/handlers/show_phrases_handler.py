@@ -9,8 +9,7 @@ def check_func(msg):
 
 def process_func(msg):
     peer_id = msg.get('peer_id')
-    message = Phrase.get_all()
-    print("message: " + message)
+    message = Phrase.get_all_str()
     api.messages.send(peer_id = peer_id,
                       message= message if message != "" and message else "Нет ни одной фразы!",
                       random_id=get_rand())
