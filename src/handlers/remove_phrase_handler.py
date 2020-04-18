@@ -10,12 +10,12 @@ def check_func(msg):
 
 def process_func(msg):
     text = msg.get('text')
-    phrase_id = int(text.replace("Баян, убери фразу", "").replace("Баян, удали фразу").replace('\n', ''))
+    phrase_id = int(text.replace("Баян, убери фразу", "").replace("Баян, удали фразу", "").replace('\n', ''))
     session.delete(Phrase.get(phrase_id))
     session.commit()
     peer_id = msg.get('peer_id')
     api.messages.send(peer_id = peer_id,
-                     message="Живой",
+                     message="Удалил",
                      random_id=get_rand())
 
 handler = Handler(check_func, process_func)

@@ -6,7 +6,7 @@ import src.handler_func as handlers
 import traceback
 
 if __name__ == "__main__":
-    # globals.Base.metadata.create_all(globals.engine)
+    globals.Base.metadata.create_all(globals.engine)
     handlers.init_handlers()
     print("Created!")
 

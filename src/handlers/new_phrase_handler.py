@@ -12,7 +12,7 @@ def check_func(msg):
 def process_func(msg):
     text = msg.get('text')
     user_id = int(msg.get('from_id'))
-    phrase_text = text.replace("Баян, добавь фразу", "").replace("Баян, новая фраза", "").replace("\n", "").capitalize()
+    phrase_text = text.replace("Баян, добавь фразу", "").replace("Баян, новая фраза", "").strip().capitalize()
     if not User.get(user_id):
         session.add(User(user_id))
         session.commit()

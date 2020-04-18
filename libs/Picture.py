@@ -8,7 +8,7 @@ from libs.PicMessage import PicMessage
 class Picture(Base):
     __tablename__ = 'pictures'
 
-    id = Column(DECIMAL, primary_key=True)
+    id = Column(Integer, autoincrement=True, primary_key=True)
     ups = Column(Integer, default=0)
     downs = Column(Integer, default=0)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)

@@ -1,5 +1,5 @@
 from globals import Base, timestamp, session
-from sqlalchemy import Column, DECIMAL, ForeignKey, VARCHAR, TIMESTAMP, Integer
+from sqlalchemy import Column, ForeignKey, VARCHAR, TIMESTAMP, Integer
 import functools as func
 
 
@@ -7,7 +7,7 @@ class Phrase(Base):
 
     __tablename__ = 'phrases'
 
-    id = Column(DECIMAL, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     text = Column(VARCHAR, nullable=False)
     add_time = Column(TIMESTAMP, default=timestamp())
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)

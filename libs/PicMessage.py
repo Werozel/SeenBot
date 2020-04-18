@@ -5,7 +5,7 @@ from sqlalchemy import Column, DECIMAL, Integer, VARCHAR, TIMESTAMP, ForeignKey
 class PicMessage(Base):
     __tablename__ = 'messages'
 
-    id = Column(DECIMAL, primary_key=True)
+    id = Column(Integer, autoincrement=True, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     pic_id = Column(Integer, ForeignKey('pictures.id'), nullable=False)
     time = Column(TIMESTAMP, default=timestamp())

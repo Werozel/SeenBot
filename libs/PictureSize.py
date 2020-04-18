@@ -5,7 +5,7 @@ from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, DECIMAL, TIMESTAMP
 class PictureSize(Base):
     __tablename__ = "sizes"
 
-    id = Column(DECIMAL, primary_key=True)
+    id = Column(Integer, autoincrement=True, primary_key=True)
     pic_id = Column(Integer, ForeignKey("pictures.id"), nullable=False)
     size = Column(VARCHAR(2), nullable=False)
     link = Column(VARCHAR, nullable=False)
