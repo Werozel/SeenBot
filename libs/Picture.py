@@ -28,18 +28,11 @@ class Picture(Base):
         return self.link == other.link
 
     @staticmethod
-    def get(id: id):
-        return session.query(Picture).filter_by(Picture.id == id).first()
+    def get(id: int):
+        return session.query(Picture).filter(Picture.id==id).first()
 
     def get_sizes(self):
         return session.query(PictureSize).filter_by(PictureSize.pic_id == self.id).all()
-
-    
-
-    # @staticmethod
-    # def was_sent(picture) -> bool:
-    #     # FIXME add sizes
-    #     res = [pool.apply_async(rmsCompare, args=(i, url,)) for i in list(urls.get(size).keys())]
 
     def __repr__(self):
         return f"Picture {str(id)}: {str(self.ups)} ups, {str(self.downs)} downs"

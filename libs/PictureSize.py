@@ -25,5 +25,5 @@ class PictureSize(Base):
 
     @staticmethod
     def get_by_link(link: str):
-        return session.query(PictureSize).filter_by(PictureSize.link == link).first()
+        return session.query(PictureSize).filter(PictureSize.link == link).first()
     
