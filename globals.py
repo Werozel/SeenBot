@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from vk_api.bot_longpoll import VkBotLongPoll
+from libs.ProcessPool import ProcessPool
 import vk_api
 import config
 import datetime
@@ -25,17 +26,7 @@ def worker_init():
         exit(0)
     signal.signal(signal.SIGINT, handler)
 
-pool = None
-
-def init_pool():
-    global pool
-    if sys.platform.startswith('linux'):
-        print('Running on linux')
-        pool = multiprocessing.Pool(processes=32,initializer=worker_init)
-    elif sys.platform.startswith('win32'):
-        print('Running on windows')
-        pool = multiprocessing.Pool(processes=32)
-
+pool = ProcessPool()
 
 def timestamp() -> datetime.datetime:
     tz = pytz.timezone("Europe/Moscow")

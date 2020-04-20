@@ -2,12 +2,19 @@ import globals
 from libs.User import User
 from libs.Picture import Picture
 from vk_api.bot_longpoll import VkBotEventType
+from libs.ProcessPool import ProcessPool
 import src.handler_func as handlers
 import traceback
 import multiprocessing
+import sys
 
 if __name__ == "__main__":
-    globals.init_pool()
+    if sys.platform.startswith('linux'):
+        print('Running on linux')
+        globals.pool.pool = multiprocessing.Pool(processes=32, initializer=globals.worker_init)
+    elif sys.platform.startswith('win32'):
+        print('Running on windows')
+        globals.pool.pool = multiprocessing.Pool(processes=32)
     multiprocessing.freeze_support()
     globals.Base.metadata.create_all(globals.engine)
     handlers.init_handlers()
@@ -25,4 +32,4 @@ if __name__ == "__main__":
     
     globals.session.close()
     globals.engine.dispose()
-    # globals.pool.close()
+    globals.pool.get().close()

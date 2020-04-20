@@ -8,9 +8,10 @@ from libs.Phrase import Phrase
 from libs.User import User
 import time
 import threading
+import requests
 
 
-def get_attachments(fwd):
+def get_attachments(fwd) -> list:
     if fwd is None or len(fwd) == 0:
         return []
     res = []
@@ -26,8 +27,9 @@ def was_seen(url: str, size: str) -> dict:
         print("Same link", flush=True)
         session.close()
         return {'result': True, 'simlink': url}
-    all_pics_with_same_size = session.query(PictureSize.link).filter(PictureSize.size == size).all()
-    results = [pool.apply_async(rmsCompare, args=(i, url,)) for i in all_pics_with_same_size]
+    raw_pic = requests.get(url).content
+    all_pics_with_same_size = list(map(lambda x: x.link, session.query(PictureSize).filter(PictureSize.size == size).all()))
+    results = [pool.get().apply_async(rmsCompare, args=(i, raw_pic,)) for i in all_pics_with_same_size]
     for res, s in [i.get() for i in results]:
         if res < 10:
             print("Already seen, has similar picture", flush=True)
@@ -69,10 +71,8 @@ def process_pic(msg):
             picture_class = Picture(pic_id, sender_id)
             session.add(picture_class)
             session.commit()
-            for size in sizes:
-                session.add(PictureSize(pic_id, size.get('type'), size.get('url')))
+            session.add(PictureSize(pic_id, max_size.get('type'), max_size.get('url')))
             session.commit()
-
 
     end_time = time.time()
     print(f"Checked in {end_time - start_time}")
@@ -83,7 +83,7 @@ def process_pic(msg):
     if seen_cnt > 0:
         peer_id = msg.get('peer_id')
         api.messages.send(peer_id = peer_id,
-                          message=Phrase.get_random(),
+                          message=Phrase.get_random().split(':')[1].strip(),
                           random_id=get_rand())
 
 def process_func(msg):

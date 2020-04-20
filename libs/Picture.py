@@ -19,6 +19,7 @@ class Picture(Base):
 
     def __init__ (self, id: int, user_id: int, **kwargs):
         super(Picture, self).__init__(**kwargs)
+        self.id = id
         self.ups = self.downs = 0
         self.user_id = user_id
         self.add_time = timestamp()

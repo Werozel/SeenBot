@@ -1,5 +1,5 @@
 from globals import Base, timestamp, session
-from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, DECIMAL, TIMESTAMP
+from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, DECIMAL, TIMESTAMP, LargeBinary
 
 
 class PictureSize(Base):
@@ -10,12 +10,15 @@ class PictureSize(Base):
     size = Column(VARCHAR(2), nullable=False)
     link = Column(VARCHAR, nullable=False)
     add_time = Column(TIMESTAMP, default=timestamp())
+    # raw = Column(LargeBinary, nullable=True, default=None)
 
-    def __init__(self, picture, size, link, **kwargs):
+    def __init__(self, picture_id, size, link, raw=None, **kwargs):
         super(PictureSize, self).__init__(**kwargs)
-        self.pic_id = picture.id
+        self.pic_id = picture_id
         self.size = size
         self.link = link
+        self.raw = raw
+        self.add_time = timestamp()
 
     def __repr__ (self):
         return f"Picture {self.pic_id} size: {self.size}, link - {self.link}"
