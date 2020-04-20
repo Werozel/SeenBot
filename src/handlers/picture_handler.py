@@ -83,7 +83,8 @@ def process_pic(msg):
         if result.get('result'):
             # Already seen
             picture_class: Picture = session.query(Picture).filter(Picture.id==pic_id).first()
-            seen_message += f'Отправил {picture_class.user.first_name} {picture_class.user.last_name} в  {format_time(picture_class.add_time)}\n'
+            if picture_class:
+                seen_message += f'Отправил {picture_class.user.first_name} {picture_class.user.last_name} в  {format_time(picture_class.add_time)}\n'
             seen_cnt += 1
         else:
             # New picture
