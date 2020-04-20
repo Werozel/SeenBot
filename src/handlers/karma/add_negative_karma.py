@@ -19,8 +19,9 @@ def process_func(msg):
     user.downs += 1
     for att in list(filter(lambda x: x.get('type') == 'photo', reply_msg.get('attachments'))):
         picture = Picture.get(att.get('photo').get('id'))
-        picture.downs += 1
-        session.add(picture)
+        if picture:
+            picture.downs += 1
+            session.add(picture)
     session.add(user)
     session.commit()
 
