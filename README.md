@@ -2,9 +2,9 @@
 
 [![CodeFactor](https://www.codefactor.io/repository/github/werozel/seenbot/badge)](https://www.codefactor.io/repository/github/werozel/seenbot)
 
-Bot for VK that helps to keep track of pictures already sent to chat
+A VK bot that helps to keep track of pictures already sent to chat
 
-### Requirements
+## Requirements
 
 * vk_api
 * pillow
@@ -14,3 +14,8 @@ Bot for VK that helps to keep track of pictures already sent to chat
 
 Use ``pip3 install -r requirements.txt`` to install all modules
 
+## Features
+
+* Custom alert messages when bot detects already sent picture
+* User statistics
+* Custom event handlers
