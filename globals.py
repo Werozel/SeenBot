@@ -8,11 +8,12 @@ import datetime
 import random
 import multiprocessing, signal
 import pytz
+import sys
 
 engine = create_engine(f"postgresql://{config.db_username}:{config.db_password}@{config.db_host}:{config.db_port}/{config.db_name}")
-SessionFactory = sessionmaker()
-SessionFactory.configure(bind=engine)
-session = SessionFactory()
+session_factory = sessionmaker()
+session_factory.configure(bind=engine)
+session = session_factory()
 Base = declarative_base()
 
 vk_session = vk_api.VkApi(token=config.vk_secret)
@@ -24,7 +25,12 @@ def worker_init():
         exit(0)
     signal.signal(signal.SIGINT, handler)
 
-# pool = multiprocessing.Pool(processes=32,initializer=worker_init)
+if sys.platform.startswith('linux'):
+    print('Running on linux')
+    pool = multiprocessing.Pool(processes=32,initializer=worker_init)
+elif sys.platform.startswith('win32'):
+    print('Running on windows')
+    pool = multiprocessing.Pool(processes=32)
 
 
 def timestamp() -> datetime.datetime:

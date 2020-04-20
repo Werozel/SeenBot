@@ -8,7 +8,7 @@ from libs.PicMessage import PicMessage
 class Picture(Base):
     __tablename__ = 'pictures'
 
-    id = Column(Integer, autoincrement=True, primary_key=True)
+    id = Column(Integer, primary_key=True)
     ups = Column(Integer, default=0)
     downs = Column(Integer, default=0)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
@@ -17,7 +17,7 @@ class Picture(Base):
     picSize_rel = relationship("PictureSize", backref="picture")
     msg_rel = relationship("PicMessage", backref="picture")
 
-    def __init__ (self, user_id: int, **kwargs):
+    def __init__ (self, id: int, user_id: int, **kwargs):
         super(Picture, self).__init__(**kwargs)
         self.ups = self.downs = 0
         self.user_id = user_id

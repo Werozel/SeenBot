@@ -10,7 +10,7 @@ if __name__ == "__main__":
     handlers.init_handlers()
     print("Created!")
 
-
+    # TODO check message overflow
     try:
         while True:
             for event in globals.longpoll.listen():
