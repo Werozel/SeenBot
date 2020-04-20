@@ -52,6 +52,9 @@ class User(Base):
     def __repr__(self) -> str:
         return f"User { str(self.id) }: {self.first_name} {self.last_name} - {str(self.ups)} ups, {str(self.downs)} downs, {str(self.all_pics)} all"
 
+    def show_stat(self) -> str:
+        return f"{self.first_name} {self.last_name}: {self.ups}↑ {self.downs}↓, всего: {self.ups}"
+
     # Returns latest pic sent by this user
     def get_latest_pic(self):
         pass

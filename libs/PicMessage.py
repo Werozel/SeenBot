@@ -9,11 +9,11 @@ class PicMessage(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     pic_id = Column(Integer, ForeignKey('pictures.id'), nullable=False)
     time = Column(TIMESTAMP, default=timestamp())
-    text = Column(TIMESTAMP, default='')
+    text = Column(VARCHAR, default='')
 
-    def __init__ (self, user_id, picture, text='', **kwargs):
+    def __init__ (self, user_id, picture_id, text='', **kwargs):
         super(PicMessage, self).__init__(**kwargs)
         self.user_id = user_id
-        self.pic_id = picture.id 
-        self.time = timestamp
+        self.pic_id = picture_id
+        self.time = timestamp()
         self.text = text

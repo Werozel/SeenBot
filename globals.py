@@ -10,6 +10,7 @@ import random
 import multiprocessing, signal
 import pytz
 import sys
+import re
 
 engine = create_engine(f"postgresql://{config.db_username}:{config.db_password}@{config.db_host}:{config.db_port}/{config.db_name}")
 session_factory = sessionmaker()
@@ -42,3 +43,7 @@ def days_between(date1: datetime.datetime, date2: datetime.datetime) -> int:
 
 def get_rand() -> int:
     return random.randint(1, 9223372036854775807 - 1)
+
+# Checks if string s contains any of ancors
+def contains_any(s, ancors):
+    return any(list(map(lambda x: re.search(x, s, re.IGNORECASE), ancors)))

@@ -6,6 +6,7 @@ from libs.PictureSize import PictureSize
 from libs.Picture import Picture
 from libs.Phrase import Phrase
 from libs.User import User
+from libs.PicMessage import PicMessage
 import time
 import threading
 import requests
@@ -91,13 +92,17 @@ def process_pic(msg):
             session.add(picture_class)
             session.commit()
             session.add(PictureSize(pic_id, max_size.get('type'), max_size.get('url')))
+            session.add(PicMessage(sender_id, pic_id, msg.get('text')))
             session.commit()
+
 
     end_time = time.time()
     print(f"Checked in {end_time - start_time}")
 
     # Adding negative carma for each seen picture
     user.downs += seen_cnt
+    session.add(user)
+    session.commit()
     # Sending a message if any picture was not new
     if seen_cnt > 0:
         peer_id = msg.get('peer_id')

@@ -2,11 +2,14 @@ import multiprocessing
 from libs.Handler import Handler
 from src.handlers.is_alive_handler import handler as is_alive_handler
 from src.handlers.help_handler import handler as help_handler
-from src.handlers.new_phrase_handler import handler as new_phrase_handler
-from src.handlers.show_phrases_handler import handler as show_phrases_handler
-from src.handlers.remove_phrase_handler import handler as remove_phrase_handler
+from src.handlers.phrase.new_phrase_handler import handler as new_phrase_handler
+from src.handlers.phrase.show_phrases_handler import handler as show_phrases_handler
+from src.handlers.phrase.remove_phrase_handler import handler as remove_phrase_handler
 from src.handlers.exit_handler import handler as exit_handler
 from src.handlers.picture_handler import handler as picture_handler
+from src.handlers.karma.show_karma_handler import handler as show_karma_handler
+from src.handlers.karma.add_positive_karma import handler as add_positive_karma
+from src.handlers.karma.add_negative_karma import handler as add_negative_karma
 
 handlers = []
 
@@ -20,6 +23,7 @@ def handle_msg(msg):
         if handler.check(msg):
             handler.process(msg)
 
+
 def init_handlers():
     add_handler(is_alive_handler)
     add_handler(help_handler)
@@ -28,3 +32,6 @@ def init_handlers():
     add_handler(remove_phrase_handler)
     add_handler(exit_handler)
     add_handler(picture_handler)
+    add_handler(show_karma_handler)
+    add_handler(add_positive_karma)
+    add_handler(add_negative_karma)
