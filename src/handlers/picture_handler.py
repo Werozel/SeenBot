@@ -25,17 +25,17 @@ def was_seen(url: str, size: str) -> dict:
     if pic_size:
         print("Same link", flush=True)
         session.close()
-        return {"result": True, "simlink": url}
+        return {'result': True, 'simlink': url}
     all_pics_with_same_size = session.query(PictureSize.link).filter(PictureSize.size == size).all()
     results = [pool.apply_async(rmsCompare, args=(i, url,)) for i in all_pics_with_same_size]
     for res, s in [i.get() for i in results]:
         if res < 10:
             print("Already seen, has similar picture", flush=True)
             session.close()
-            return {"result": True, "simlink": s}
+            return {'result': True, 'simlink': s}
     print("No similar pic, returning...", flush=True)
     session.close()
-    return {"result": False, "simlink": None}
+    return {'result': False, 'simlink': None}
 
 
 def check_func(msg):
@@ -46,33 +46,47 @@ def check_func(msg):
 def process_pic(msg):
     attachments = msg.get('attachments') + get_attachments(msg.get('fwd_messages'))
     photos = list(map(lambda x: x.get('photo'), list(filter(lambda x: x.get('type') == 'photo', attachments))))
+    session = session_factory()
     sender_id = msg.get('from_id')
-    user = User.get(sender_id)
+    user: User = session.query(User).filter(User.id==sender_id).first()
+    if not User:
+        user = User(sender_id)
+        session.add(user)
+        session.commit()
+    user.all_pics += len(attachments)
     
     start_time = time.time()
-    seen_flag = False
+    seen_cnt = 0
     for pic in photos:
-        max_size: dict = None
-        for size in reversed(size_letters):
-            if max_size is not None:
-                break
-            for i in att.get("photo").get("sizes"):
-                if i.get("type") == size:
-                    max_size = i
-                    break
-        threading.Thread(target=was_seen, args=())
+        sizes = pic.get('sizes')
+        
+        max_size: dict = sizes[-1]
+        result = was_seen(max_size.get('url'), max_size.get('type'))
+        if result.get('result'):
+            seen_cnt += 1
+        else:
+            pic_id = pic.get('id')
+            picture_class = Picture(pic_id, sender_id)
+            session.add(picture_class)
+            session.commit()
+            for size in sizes:
+                session.add(PictureSize(pic_id, size.get('type'), size.get('url')))
+            session.commit()
 
 
     end_time = time.time()
     print(f"Checked in {end_time - start_time}")
 
-    if seen_flag:
+    user.downs += seen_cnt
+    session.close()
+
+    if seen_cnt > 0:
         peer_id = msg.get('peer_id')
         api.messages.send(peer_id = peer_id,
                           message=Phrase.get_random(),
                           random_id=get_rand())
 
 def process_func(msg):
-    pass
+    threading.Thread(target=process_pic, args=(msg, ), daemon=True).start()
 
 handler = Handler(check_func, process_func)
