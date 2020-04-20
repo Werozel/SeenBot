@@ -1,5 +1,5 @@
 # config files
-config.py
+config*
 
 # vscode
 .vscode/
