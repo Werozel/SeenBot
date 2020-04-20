@@ -6,6 +6,7 @@ from src.handlers.new_phrase_handler import handler as new_phrase_handler
 from src.handlers.show_phrases_handler import handler as show_phrases_handler
 from src.handlers.remove_phrase_handler import handler as remove_phrase_handler
 from src.handlers.exit_handler import handler as exit_handler
+from src.handlers.picture_handler import handler as picture_handler
 
 handlers = []
 
@@ -26,3 +27,4 @@ def init_handlers():
     add_handler(show_phrases_handler)
     add_handler(remove_phrase_handler)
     add_handler(exit_handler)
+    add_handler(picture_handler)

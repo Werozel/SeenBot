@@ -25,12 +25,16 @@ def worker_init():
         exit(0)
     signal.signal(signal.SIGINT, handler)
 
-if sys.platform.startswith('linux'):
-    print('Running on linux')
-    pool = multiprocessing.Pool(processes=32,initializer=worker_init)
-elif sys.platform.startswith('win32'):
-    print('Running on windows')
-    pool = multiprocessing.Pool(processes=32)
+pool = None
+
+def init_pool():
+    global pool
+    if sys.platform.startswith('linux'):
+        print('Running on linux')
+        pool = multiprocessing.Pool(processes=32,initializer=worker_init)
+    elif sys.platform.startswith('win32'):
+        print('Running on windows')
+        pool = multiprocessing.Pool(processes=32)
 
 
 def timestamp() -> datetime.datetime:

@@ -4,8 +4,11 @@ from libs.Picture import Picture
 from vk_api.bot_longpoll import VkBotEventType
 import src.handler_func as handlers
 import traceback
+import multiprocessing
 
 if __name__ == "__main__":
+    globals.init_pool()
+    multiprocessing.freeze_support()
     globals.Base.metadata.create_all(globals.engine)
     handlers.init_handlers()
     print("Created!")
