@@ -1,5 +1,5 @@
 from libs.Handler import Handler
-from globals import api, get_rand, pool, session_factory
+from globals import api, get_rand, pool, session_factory, format_time
 from constants import size_letters
 from src.comparison import rmsCompare
 from libs.PictureSize import PictureSize
@@ -56,18 +56,21 @@ def process_pic(msg):
         session.add(user)
         session.commit()
     user.all_pics += len(attachments)
+    seen_message = Phrase.get_random().split(':')[1].strip() + '\n'
     
     start_time = time.time()
     seen_cnt = 0
     for pic in photos:
         sizes = pic.get('sizes')
-        
+        pic_id = pic.get('id')
+
         max_size: dict = sizes[-1]
         result = was_seen(max_size.get('url'), max_size.get('type'))
         if result.get('result'):
+            picture_class: Picture = session.query(Picture).filter(Picture.id==pic_id).first()
+            seen_message += f'Отправил {picture_class.user.first_name} {picture_class.user.last_name} в  {format_time(picture_class.add_time)}\n'
             seen_cnt += 1
         else:
-            pic_id = pic.get('id')
             picture_class = Picture(pic_id, sender_id)
             session.add(picture_class)
             session.commit()
@@ -78,13 +81,13 @@ def process_pic(msg):
     print(f"Checked in {end_time - start_time}")
 
     user.downs += seen_cnt
-    session.close()
-
     if seen_cnt > 0:
         peer_id = msg.get('peer_id')
         api.messages.send(peer_id = peer_id,
-                          message=Phrase.get_random().split(':')[1].strip(),
+                          message=seen_message,
                           random_id=get_rand())
+    session.close()
+
 
 def process_func(msg):
     threading.Thread(target=process_pic, args=(msg, ), daemon=True).start()
