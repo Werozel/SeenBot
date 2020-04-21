@@ -65,7 +65,9 @@ def process_pic(msg):
         user = User(sender_id)
         session.add(user)
         session.commit()
-    user.all_pics += len(attachments)
+    user.all_pics += len(photos)
+    session.add(user)
+    session.commit()
     # Message that will be sent to chat if picture has been already seen
     seen_message = Phrase.get_random().split(':')[1].strip() + '\n'
     
