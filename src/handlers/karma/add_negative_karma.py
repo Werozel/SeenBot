@@ -7,7 +7,7 @@ from libs.Picture import Picture
 def check_func(msg):
     text = msg.get('text')
     reply_msg = msg.get('reply_message')
-    return reply_msg and len(reply_msg.get('attachments')) > 0 and contains_any(text, ['баян', 'был', 'пикабу'])
+    return reply_msg and len(reply_msg.get('attachments')) > 0 and contains_any(text, ['баян', 'был', 'пикабу', 'говн'])
 
 
 def process_func(msg):
