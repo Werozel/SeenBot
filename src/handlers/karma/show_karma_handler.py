@@ -11,7 +11,8 @@ def check_func(msg):
 def process_func(msg):
     users = session.query(User).order_by().all()
     stats: list = list(map(lambda x: x.show_stat(), 
-                       sorted(users, key=lambda user: (user.downs / user.all_pics if user.all_pics > 0 else 1000, 
+                       sorted(users, key=lambda user: (-(user.downs + user.ups) / user.all_pics if user.all_pics else 0,
+                                                        user.downs / user.all_pics if user.all_pics > 0 else 1000, 
                                                        -user.ups/user.all_pics if user.all_pics > 0 else 0, ))))
     stat_str = '\n'.join(stats)
     peer_id = msg.get('peer_id')
