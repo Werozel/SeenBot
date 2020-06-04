@@ -26,11 +26,11 @@ class Picture(Base):
         self.add_time = timestamp()
 
     @staticmethod
-    def get(id: int):
-        return session.query(Picture).filter(Picture.id == id).first()
+    def get(id: int, local_session=session):
+        return local_session.query(Picture).filter(Picture.id == id).first()
 
-    def get_sizes(self):
-        return session.query(PictureSize).filter_by(PictureSize.pic_id == self.id).all()
+    def get_sizes(self, local_session=session):
+        return local_session.query(PictureSize).filter_by(PictureSize.pic_id == self.id).all()
 
     def __repr__(self):
         return f"Picture {str(id)}: {str(self.ups)} ups, {str(self.downs)} downs"

@@ -5,7 +5,6 @@ import random
 
 
 class Phrase(Base):
-
     __tablename__ = 'phrases'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -13,8 +12,7 @@ class Phrase(Base):
     add_time = Column(TIMESTAMP, default=timestamp())
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
 
-
-    def __init__ (self, text: str, user_id: int, **kwargs):
+    def __init__(self, text: str, user_id: int, **kwargs):
         super(Phrase, self).__init__(**kwargs)
         self.text = text
         self.user_id = user_id
@@ -33,8 +31,8 @@ class Phrase(Base):
         return func.reduce(lambda a, b: a+b, phrase_list) if len(phrase_list) > 0 else ""
 
     @staticmethod
-    def get(phrase_id: int):
-        return session.query(Phrase).filter(Phrase.id == phrase_id).first()
+    def get(phrase_id: int, local_session=session):
+        return local_session.query(Phrase).filter(Phrase.id == phrase_id).first()
 
     @staticmethod
     def get_random():

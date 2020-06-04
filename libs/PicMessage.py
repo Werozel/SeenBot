@@ -1,6 +1,7 @@
 from globals import Base, timestamp
 from sqlalchemy import Column, DECIMAL, Integer, VARCHAR, TIMESTAMP, ForeignKey
 
+
 # Message with picture
 class PicMessage(Base):
     __tablename__ = 'messages'
@@ -11,7 +12,7 @@ class PicMessage(Base):
     time = Column(TIMESTAMP, default=timestamp())
     text = Column(VARCHAR, default='')
 
-    def __init__ (self, user_id, picture_id, text='', **kwargs):
+    def __init__(self, user_id, picture_id, text='', **kwargs):
         super(PicMessage, self).__init__(**kwargs)
         self.user_id = user_id
         self.pic_id = picture_id

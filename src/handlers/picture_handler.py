@@ -88,13 +88,16 @@ def process_pic(msg) -> None:
             # Already seen
             picture_size: PictureSize = result_max.get('simpic') if result_max.get('result') \
                                                               else result_middle.get('simpic')
-            picture: Picture = Picture.get(picture_size.pic_id) if picture_size else None
-            user: User = User.get(picture.user_id) if picture else None
+            local_session = session_factory()
+            picture: Picture = Picture.get(picture_size.pic_id, local_session) if picture_size else None
+            user: User = User.get(picture.user_id, local_session) if picture else None
             if user:
                 seen_message += f'Отправил {user.first_name} ' \
                                 f' {user.last_name} в' \
                                 f'  {format_time(picture_size.add_time)}\n'
             seen_cnt += 1
+            local_session.close()
+            break
         else:
             # New picture
             # Adding it to the DB
