@@ -1,6 +1,8 @@
+from typing import List
+
 from libs.Handler import Handler
 from globals import api, get_rand, pool, session_factory, format_time
-from src.comparison import rmsCompare
+from src.comparison import rms_compare
 from libs.PictureSize import PictureSize
 from libs.Picture import Picture
 from libs.Phrase import Phrase
@@ -28,21 +30,20 @@ def was_seen(url: str, size: str) -> dict:
     if pic_already_in_db:
         # Already in DB
         print("Same link", flush=True)
-        return {'result': True, 'simlink': url}
+        return {'result': True, 'simpic': pic_already_in_db}
     # Not in DB
     raw_pic = requests.get(url).content  # Getting a picture from VK
     # Getting all pictures with same max size
-    all_pics_with_same_size = list(map(lambda x: x.link,
-                                       session.query(PictureSize).filter(PictureSize.size == size).all()))
+    all_pics_with_same_size: List[PictureSize] = session.query(PictureSize).filter(PictureSize.size == size).all()
     # Starting async_pool to compare all of pictures with same size with current
-    results = [pool.get().apply_async(rmsCompare, args=(i, raw_pic,)) for i in all_pics_with_same_size]
-    for res, s in [i.get() for i in results]:
+    results = [pool.get().apply_async(rms_compare, args=(i, raw_pic,)) for i in all_pics_with_same_size]
+    for res, pic in [i.get() for i in results]:
         if res < 10:
             # Pictures are similar enough
             print("Already seen, has similar picture", flush=True)
-            return {'result': True, 'simlink': s}
+            return {'result': True, 'simpic': pic}
     print("No similar pic, returning...", flush=True)
-    return {'result': False, 'simlink': None}
+    return {'result': False, 'simpic': None}
 
 
 def check_func(msg) -> bool:
@@ -85,7 +86,8 @@ def process_pic(msg) -> None:
 
         if result_max.get('result') or result_middle.get('result'):
             # Already seen
-            picture_class: Picture = session.query(Picture).filter(Picture.id == pic_id).first()
+            picture_class: Picture = result_max.get('simpic') if result_max.get('result') \
+                                                              else result_middle.get('simpic')
             if picture_class:
                 seen_message += f'Отправил {picture_class.user.first_name} {picture_class.user.last_name} в' \
                                 f'  {format_time(picture_class.add_time)}\n'
@@ -122,3 +124,4 @@ def process_func(msg):
 
 
 handler = Handler(check_func, process_func)
+

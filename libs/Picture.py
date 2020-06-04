@@ -1,9 +1,10 @@
 from sqlalchemy import Column, Integer, VARCHAR, Binary, DECIMAL, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
 from globals import Base, timestamp, session
-from src.comparison import rmsCompare
+from src.comparison import rms_compare
 from libs.PictureSize import PictureSize
 from libs.PicMessage import PicMessage
+
 
 class Picture(Base):
     __tablename__ = 'pictures'
