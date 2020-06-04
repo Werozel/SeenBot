@@ -78,7 +78,7 @@ def process_pic(msg) -> None:
 
         # FIXME not sure if an order of sizes is consistent
         max_size: dict = sizes[-1]  # Max size of this picture
-        middle_size: dict = sizes[len(sizes) / 2]
+        middle_size: dict = sizes[int(len(sizes) / 2)]
         # Checking if a max size of this picture has been already seen
         result_max = was_seen(max_size.get('url'), max_size.get('type'))
         result_middle = was_seen(middle_size.get('url'), middle_size.get('type'))
@@ -86,9 +86,8 @@ def process_pic(msg) -> None:
         if result_max.get('result') or result_middle.get('result'):
             # Already seen
             picture_class: Picture = session.query(Picture).filter(Picture.id == pic_id).first()
-            user: User = User.get(picture_class.user_id)
             if picture_class:
-                seen_message += f'Отправил {user.first_name} {user.last_name} в' \
+                seen_message += f'Отправил {picture_class.user.first_name} {picture_class.user.last_name} в' \
                                 f'  {format_time(picture_class.add_time)}\n'
             seen_cnt += 1
         else:
