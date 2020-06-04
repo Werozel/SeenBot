@@ -86,10 +86,11 @@ def process_pic(msg) -> None:
 
         if result_max.get('result') or result_middle.get('result'):
             # Already seen
-            picture_class: Picture = result_max.get('simpic') if result_max.get('result') \
+            picture_class: PictureSize = result_max.get('simpic') if result_max.get('result') \
                                                               else result_middle.get('simpic')
             if picture_class:
-                seen_message += f'Отправил {picture_class.user.first_name} {picture_class.user.last_name} в' \
+                seen_message += f'Отправил {picture_class.picture.user.first_name} ' \
+                                f'{picture_class.picture.user.last_name} в' \
                                 f'  {format_time(picture_class.add_time)}\n'
             seen_cnt += 1
         else:
