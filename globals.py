@@ -22,28 +22,35 @@ vk_session = vk_api.VkApi(token=config.vk_secret)
 longpoll = VkBotLongPoll(vk_session, config.vk_groupId)
 api = vk_session.get_api()
 
+
 def worker_init():
     def handler(signum, stack):
         exit(0)
     signal.signal(signal.SIGINT, handler)
 
+
 pool = ProcessPool()
+
 
 def timestamp() -> datetime.datetime:
     tz = pytz.timezone("Europe/Moscow")
     return datetime.datetime.now(tz)
 
+
 def format_time(date: datetime.datetime) -> str:
-    return date.strftime("%H:%M&#12288;%d %b")
+    return date.strftime("%H:%M,&#12288;%d %b")
+
 
 def days_between(date1: datetime.datetime, date2: datetime.datetime) -> int:
     d1 = date1.replace(tzinfo=None)
     d2 = date2.replace(tzinfo=None)
     return abs((d1 - d2).days)
 
+
 def get_rand() -> int:
     return random.randint(1, 9223372036854775807 - 1)
 
-# Checks if string s contains any of ancors
-def contains_any(s, ancors):
-    return any(list(map(lambda x: re.search(x, s, re.IGNORECASE), ancors)))
+
+# Checks if string s contains any of anchors
+def contains_any(s, anchors):
+    return any(list(map(lambda x: re.search(x, s, re.IGNORECASE), anchors)))

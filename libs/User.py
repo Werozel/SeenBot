@@ -37,14 +37,13 @@ class User(Base):
             self.downs = user.downs
             self.all_pics = user.all_pics
             self.add_time = user.add_time
-            
 
     @staticmethod
-    def get(id:int):
-        return session.query(User).filter(User.id==id).first()
+    def get(id: int, local_session=session):
+        return local_session.query(User).filter(User.id == id).first()
 
-    def get_pics(self):
-        return session.query(Picture).filter(Picture.id==self.id).all()
+    def get_pics(self, local_session=session):
+        return local_session.query(Picture).filter(Picture.id == self.id).all()
 
     def __eq__ (self, other) -> bool:
         return self.id == other.id
