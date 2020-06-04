@@ -86,17 +86,20 @@ def process_pic(msg) -> None:
 
         if result_max.get('result') or result_middle.get('result'):
             # Already seen
-            picture_class: Picture = result_max.get('simpic') if result_max.get('result') \
+            picture_size: PictureSize = result_max.get('simpic') if result_max.get('result') \
                                                               else result_middle.get('simpic')
-            if picture_class:
-                seen_message += f'Отправил {picture_class.user.first_name} {picture_class.user.last_name} в' \
-                                f'  {format_time(picture_class.add_time)}\n'
+            picture: Picture = Picture.get(picture_size.pic_id) if picture_size else None
+            user: User = User.get(picture.user_id) if picture else None
+            if user:
+                seen_message += f'Отправил {user.first_name} ' \
+                                f' {user.last_name} в' \
+                                f'  {format_time(picture_size.add_time)}\n'
             seen_cnt += 1
         else:
             # New picture
             # Adding it to the DB
-            picture_class = Picture(pic_id, sender_id)
-            session.add(picture_class)
+            picture_size = Picture(pic_id, sender_id)
+            session.add(picture_size)
             session.commit()
             session.add(PictureSize(pic_id, max_size.get('type'), max_size.get('url')))
             session.add(PicMessage(sender_id, pic_id, msg.get('text')))
