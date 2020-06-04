@@ -38,7 +38,7 @@ def timestamp() -> datetime.datetime:
 
 
 def format_time(date: datetime.datetime) -> str:
-    return date.strftime("%H:%M,&#12288;%d %b")
+    return date.strftime("%H:%M,  %d %b")
 
 
 def days_between(date1: datetime.datetime, date2: datetime.datetime) -> int:
