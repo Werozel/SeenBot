@@ -1,6 +1,5 @@
 from libs.Handler import Handler
 from globals import api, get_rand, pool, session_factory, format_time
-from constants import size_letters
 from src.comparison import rmsCompare
 from libs.PictureSize import PictureSize
 from libs.Picture import Picture
@@ -33,7 +32,8 @@ def was_seen(url: str, size: str) -> dict:
     # Not in DB
     raw_pic = requests.get(url).content  # Getting a picture from VK
     # Getting all pictures with same max size
-    all_pics_with_same_size = list(map(lambda x: x.link, session.query(PictureSize).filter(PictureSize.size == size).all()))
+    all_pics_with_same_size = list(map(lambda x: x.link,
+                                       session.query(PictureSize).filter(PictureSize.size == size).all()))
     # Starting async_pool to compare all of pictures with same size with current
     results = [pool.get().apply_async(rmsCompare, args=(i, raw_pic,)) for i in all_pics_with_same_size]
     for res, s in [i.get() for i in results]:
@@ -45,13 +45,13 @@ def was_seen(url: str, size: str) -> dict:
     return {'result': False, 'simlink': None}
 
 
-def check_func(msg):
+def check_func(msg) -> bool:
     att = msg.get('attachments') + get_attachments(msg.get('fwd_messages'))
     # True if there is any attachments with type 'photo'
     return len(att) > 0 and any(list(map(lambda x: x.get('type') == 'photo', att)))
 
 
-def process_pic(msg):
+def process_pic(msg) -> None:
     # Getting all the attachments even in forwarded messages
     attachments = msg.get('attachments') + get_attachments(msg.get('fwd_messages'))
     # Leaving only the photos
@@ -60,7 +60,7 @@ def process_pic(msg):
     session = session_factory()
     sender_id = msg.get('from_id')
     # Getting the user from DB or creating a new one
-    user: User = session.query(User).filter(User.id==sender_id).first()
+    user: User = session.query(User).filter(User.id == sender_id).first()
     if not User:
         user = User(sender_id)
         session.add(user)
@@ -73,18 +73,23 @@ def process_pic(msg):
     # Count of seen pictures
     seen_cnt = 0
     for pic in photos:
-        sizes = pic.get('sizes') # All sizes for this picture
+        sizes = pic.get('sizes')  # All sizes for this picture
         pic_id = pic.get('id')
 
         # FIXME not sure if an order of sizes is consistent
         max_size: dict = sizes[-1]  # Max size of this picture
+        middle_size: dict = sizes[len(sizes) / 2]
         # Checking if a max size of this picture has been already seen
-        result = was_seen(max_size.get('url'), max_size.get('type'))
-        if result.get('result'):
+        result_max = was_seen(max_size.get('url'), max_size.get('type'))
+        result_middle = was_seen(middle_size.get('url'), middle_size.get('type'))
+
+        if result_max.get('result') or result_middle.get('result'):
             # Already seen
-            picture_class: Picture = session.query(Picture).filter(Picture.id==pic_id).first()
+            picture_class: Picture = session.query(Picture).filter(Picture.id == pic_id).first()
+            user: User = User.get(picture_class.user_id)
             if picture_class:
-                seen_message += f'Отправил {picture_class.user.first_name} {picture_class.user.last_name} в  {format_time(picture_class.add_time)}\n'
+                seen_message += f'Отправил {user.first_name} {user.last_name} в' \
+                                f'  {format_time(picture_class.add_time)}\n'
             seen_cnt += 1
         else:
             # New picture
@@ -96,7 +101,6 @@ def process_pic(msg):
             session.add(PicMessage(sender_id, pic_id, msg.get('text')))
             session.commit()
 
-
     end_time = time.time()
     print(f"Checked in {end_time - start_time}")
 
@@ -107,7 +111,7 @@ def process_pic(msg):
     # Sending a message if any picture was not new
     if seen_cnt > 0:
         peer_id = msg.get('peer_id')
-        api.messages.send(peer_id = peer_id,
+        api.messages.send(peer_id=peer_id,
                           message=seen_message,
                           random_id=get_rand())
     session.close()
@@ -116,5 +120,6 @@ def process_pic(msg):
 def process_func(msg):
     # Leaving a thread that processes this message running 
     threading.Thread(target=process_pic, args=(msg, ), daemon=True).start()
+
 
 handler = Handler(check_func, process_func)

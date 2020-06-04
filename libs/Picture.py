@@ -23,13 +23,10 @@ class Picture(Base):
         self.ups = self.downs = 0
         self.user_id = user_id
         self.add_time = timestamp()
-    
-    def __eq__ (self, other) -> bool:
-        return self.link == other.link
 
     @staticmethod
     def get(id: int):
-        return session.query(Picture).filter(Picture.id==id).first()
+        return session.query(Picture).filter(Picture.id == id).first()
 
     def get_sizes(self):
         return session.query(PictureSize).filter_by(PictureSize.pic_id == self.id).all()
