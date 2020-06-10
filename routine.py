@@ -1,4 +1,5 @@
 import globals
+from PIL import ImageFile
 from libs.User import User
 from libs.Picture import Picture
 from vk_api.bot_longpoll import VkBotEventType
@@ -17,6 +18,7 @@ if __name__ == "__main__":
         globals.pool.pool = multiprocessing.Pool(processes=32)
     multiprocessing.freeze_support()
     globals.Base.metadata.create_all(globals.engine)
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
     handlers.init_handlers()
     print("Created!")
 
