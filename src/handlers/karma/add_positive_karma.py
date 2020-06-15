@@ -1,5 +1,5 @@
 from libs.Handler import Handler
-from globals import api, get_rand, contains_any, session
+from globals import contains_any, session
 from libs.User import User
 from libs.Picture import Picture
 
@@ -7,7 +7,7 @@ from libs.Picture import Picture
 def check_func(msg):
     text = msg.get('text')
     reply_msg = msg.get('reply_message')
-    return reply_msg and len(reply_msg.get('attachments')) > 0 and contains_any(text, ['годн', 'заебись', 'жиз', 'найс', 'ор ', 'ору ', 'ржак', 'ржек'])
+    return reply_msg and len(reply_msg.get('attachments')) > 0 and contains_any(text, ['годн', 'заебись', 'жиз', 'найс', 'ор', 'ору', 'ржак', 'ржек'])
 
 
 def process_func(msg):
