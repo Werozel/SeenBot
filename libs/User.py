@@ -45,15 +45,15 @@ class User(Base):
     def get_pics(self, local_session=session):
         return local_session.query(Picture).filter(Picture.id == self.id).all()
 
-    def __eq__ (self, other) -> bool:
+    def __eq__(self, other) -> bool:
         return self.id == other.id
 
     def __repr__(self) -> str:
         return f"User { str(self.id) }: {self.first_name} {self.last_name} - {str(self.ups)} ups, {str(self.downs)} downs, {str(self.all_pics)} all"
 
     def show_stat(self) -> str:
-        return f"{self.first_name} {self.last_name}: {self.ups}↑ {self.downs}↓ всего: {self.all_pics}"
+        return f"{self.first_name}: {self.ups}↑ {self.downs}↓ всего: {self.all_pics}"
 
     # Returns latest pic sent by this user
-    def get_latest_pic(self):
+    def __get_latest_pic(self):
         pass
