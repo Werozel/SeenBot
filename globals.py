@@ -7,12 +7,12 @@ import vk_api
 import config
 import datetime
 import random
-import multiprocessing, signal
+import signal
 import pytz
-import sys
 import re
 
-engine = create_engine(f"postgresql://{config.db_username}:{config.db_password}@{config.db_host}:{config.db_port}/{config.db_name}")
+engine = create_engine(f"postgresql://{config.db_username}:{config.db_password}@"
+                       f"{config.db_host}:{config.db_port}/{config.db_name}")
 session_factory = sessionmaker()
 session_factory.configure(bind=engine)
 session = session_factory()
@@ -54,3 +54,7 @@ def get_rand() -> int:
 # Checks if string s contains any of anchors
 def contains_any(s, anchors):
     return any(list(map(lambda x: re.search(x, s, re.IGNORECASE), anchors)))
+
+
+def log(label, message):
+    print(f"{timestamp()}: {label}: {message}", flush=True)

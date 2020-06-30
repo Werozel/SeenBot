@@ -1,4 +1,3 @@
-import multiprocessing
 from libs.Handler import Handler
 from src.handlers.is_alive_handler import handler as is_alive_handler
 from src.handlers.help_handler import handler as help_handler

@@ -1,7 +1,6 @@
 from PIL import ImageChops, Image
 import math
 import requests
-import time
 from io import BytesIO
 
 from libs.PictureSize import PictureSize

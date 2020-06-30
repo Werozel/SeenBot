@@ -1,16 +1,19 @@
 from typing import List
-
 from libs.Handler import Handler
-from globals import api, get_rand, pool, session_factory, format_time
+from globals import api, get_rand, pool, session_factory, format_time, log
 from src.comparison import rms_compare
 from libs.PictureSize import PictureSize
 from libs.Picture import Picture
 from libs.Phrase import Phrase
 from libs.User import User
 from libs.PicMessage import PicMessage
+
 import time
 import threading
 import requests
+
+
+label: str = "picture_handler"
 
 
 def get_attachments(fwd) -> list:
@@ -29,7 +32,7 @@ def was_seen(url: str, size: str) -> dict:
     session.close()
     if pic_already_in_db:
         # Already in DB
-        print("Same link", flush=True)
+        log(label, "Same link")
         return {'result': True, 'simpic': pic_already_in_db}
     # Not in DB
     raw_pic = requests.get(url).content  # Getting a picture from VK
@@ -40,9 +43,9 @@ def was_seen(url: str, size: str) -> dict:
     for res, pic in [i.get() for i in results]:
         if res < 10:
             # Pictures are similar enough
-            print("Already seen, has similar picture", flush=True)
+            log(label, "Already seen, has similar picture")
             return {'result': True, 'simpic': pic}
-    print("No similar pic, returning...", flush=True)
+    log(label, "No similar pic, returning...")
     return {'result': False, 'simpic': None}
 
 
@@ -69,15 +72,14 @@ def process_pic(msg) -> None:
     user.all_pics += len(photos)
     # Message that will be sent to chat if picture has been already seen
     seen_message = Phrase.get_random().split(':')[1].strip() + '\n'
-    
+
+    seen: bool = False
     start_time = time.time()
     # Count of seen pictures
-    seen_cnt = 0
     for pic in photos:
         sizes = pic.get('sizes')  # All sizes for this picture
         pic_id = pic.get('id')
 
-        # FIXME not sure if an order of sizes is consistent
         max_size: dict = sizes[-1]  # Max size of this picture
         middle_size: dict = sizes[int(len(sizes) / 2)]
         # Checking if a max size of this picture has been already seen
@@ -86,8 +88,9 @@ def process_pic(msg) -> None:
 
         if result_max.get('result') or result_middle.get('result'):
             # Already seen
+            seen = True
             picture_size: PictureSize = result_max.get('simpic') if result_max.get('result') \
-                                                              else result_middle.get('simpic')
+                else result_middle.get('simpic')
             local_session = session_factory()
             picture: Picture = Picture.get(picture_size.pic_id) if picture_size else None
             orig_user: User = User.get(picture.user_id, local_session) if picture else None
@@ -95,32 +98,34 @@ def process_pic(msg) -> None:
                 seen_message += f'Отправил  {orig_user.first_name}' \
                                 f' {orig_user.last_name}  в' \
                                 f'  {format_time(picture_size.add_time)}\n'
-            seen_cnt += 1
             local_session.close()
             break
         else:
             # New picture
             # Adding it to the DB
-            picture_size = Picture(pic_id, sender_id)
-            session.add(picture_size)
+            picture = Picture(pic_id, sender_id)
+            session.add(picture)
             session.commit()
             session.add(PictureSize(pic_id, max_size.get('type'), max_size.get('url')))
             session.add(PicMessage(sender_id, pic_id, msg.get('text')))
             session.commit()
 
     end_time = time.time()
-    print(f"Checked in {end_time - start_time}")
+    log(label, f"Checked in {end_time - start_time}")
 
     # Adding negative carma for each seen picture
-    user.downs += seen_cnt
-    session.add(user)
-    session.commit()
+
     # Sending a message if any picture was not new
-    if seen_cnt > 0:
+    if seen:
+        log(label, f"{user.first_name} {user.last_name} downs +1 = {user.downs}")
+        user.downs += 1
         peer_id = msg.get('peer_id')
         api.messages.send(peer_id=peer_id,
                           message=seen_message,
                           random_id=get_rand())
+
+    session.add(user)
+    session.commit()
     session.close()
 
 
@@ -130,4 +135,3 @@ def process_func(msg):
 
 
 handler = Handler(check_func, process_func)
-

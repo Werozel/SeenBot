@@ -1,5 +1,5 @@
 from globals import Base, timestamp
-from sqlalchemy import Column, DECIMAL, Integer, VARCHAR, TIMESTAMP, ForeignKey
+from sqlalchemy import Column, Integer, VARCHAR, TIMESTAMP, ForeignKey
 
 
 # Message with picture

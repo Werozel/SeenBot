@@ -23,4 +23,5 @@ def process_func(msg):
                       message="Добавил",
                       random_id=get_rand())
 
+
 handler = Handler(check_func, process_func)

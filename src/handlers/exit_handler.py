@@ -1,5 +1,8 @@
 from libs.Handler import Handler
-from globals import api, get_rand
+from globals import api, get_rand, log
+
+
+label: str = "exit_handler"
 
 def check_func(msg):
     text = msg.get('text')
@@ -8,9 +11,10 @@ def check_func(msg):
 
 def process_func(msg):
     peer_id = msg.get('peer_id')
-    api.messages.send(peer_id = peer_id,
-                     message="Готово",
-                     random_id=get_rand())
+    api.messages.send(peer_id=peer_id,
+                      message="Готово",
+                      random_id=get_rand())
+    log(label, "Exiting...")
     raise Exception("Exiting...")
     
 

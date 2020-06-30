@@ -5,6 +5,7 @@ from libs.Picture import Picture
 from libs.Phrase import Phrase
 from libs.PicMessage import PicMessage
 
+
 class User(Base):
     __tablename__ = 'users'
 
@@ -20,7 +21,7 @@ class User(Base):
     phrase_rel = relationship("Phrase", backref="user")
     msg_rel = relationship("PicMessage", backref="user")
 
-    def __init__ (self, id: int, **kwargs):
+    def __init__(self, id: int, **kwargs):
         super(User, self).__init__(**kwargs)
         self.id = id
         user = User.get(id)
@@ -49,7 +50,8 @@ class User(Base):
         return self.id == other.id
 
     def __repr__(self) -> str:
-        return f"User { str(self.id) }: {self.first_name} {self.last_name} - {str(self.ups)} ups, {str(self.downs)} downs, {str(self.all_pics)} all"
+        return f"User { str(self.id) }: {self.first_name} {self.last_name} - {str(self.ups)} ups, " \
+               f"{str(self.downs)} downs, {str(self.all_pics)} all"
 
     def show_stat(self) -> str:
         return f"{self.first_name}: {self.ups}↑ {self.downs}↓ всего: {self.all_pics}"

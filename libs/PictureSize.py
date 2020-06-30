@@ -1,5 +1,5 @@
 from globals import Base, timestamp, session
-from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, DECIMAL, TIMESTAMP, LargeBinary
+from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, TIMESTAMP
 
 
 class PictureSize(Base):
@@ -20,7 +20,7 @@ class PictureSize(Base):
         self.raw = raw
         self.add_time = timestamp()
 
-    def __repr__ (self):
+    def __repr__(self):
         return f"Picture {self.pic_id} size: {self.size}, link - {self.link}"
 
     @staticmethod

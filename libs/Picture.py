@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, VARCHAR, Binary, DECIMAL, ForeignKey, TIMESTAMP
+from sqlalchemy import Column, Integer, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
 from globals import Base, timestamp, session
-from src.comparison import rms_compare
 from libs.PictureSize import PictureSize
 from libs.PicMessage import PicMessage
 
@@ -18,7 +17,7 @@ class Picture(Base):
     picSize_rel = relationship("PictureSize", backref="picture")
     msg_rel = relationship("PicMessage", backref="picture")
 
-    def __init__ (self, id: int, user_id: int, **kwargs):
+    def __init__(self, id: int, user_id: int, **kwargs):
         super(Picture, self).__init__(**kwargs)
         self.id = id
         self.ups = self.downs = 0

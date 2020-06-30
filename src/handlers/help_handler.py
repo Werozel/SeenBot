@@ -14,4 +14,5 @@ def process_func(msg):
                       message=bot_help,
                       random_id=get_rand())
 
+
 handler = Handler(check_func, process_func)
