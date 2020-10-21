@@ -1,6 +1,5 @@
-from typing import List
 from libs.Handler import Handler
-from globals import api, get_rand, pool, session_factory, format_time, log, get_attachments, intersection
+from globals import api, get_rand, pool, session_factory, format_time, log, get_attachments, intersection, session
 from src.comparison import rms_compare
 from libs.PictureSize import PictureSize
 from libs.Picture import Picture
@@ -15,7 +14,7 @@ import threading
 label: str = "picture_handler"
 
 
-def get_optimal_pair(sizes_with_links: list, sizes: list, pic_id: int, session):
+def get_optimal_pair(sizes_with_links: list, sizes: list, pic_id: int):
     pic_sizes = PictureSize.get_sizes_for_id(pic_id, session)
     common_sizes = intersection(sizes, pic_sizes)
     max_common_size = common_sizes[-1]
@@ -26,29 +25,29 @@ def get_optimal_pair(sizes_with_links: list, sizes: list, pic_id: int, session):
 
 
 def was_seen(sizes_with_links: list) -> dict:
-    session = session_factory()
+    local_session = session_factory()
 
     # Checking whether a link is already in DB
-    pic_already_in_db = list(map(lambda x: PictureSize.get_by_link(x.get('url'), session), sizes_with_links))
+    pic_already_in_db = list(map(lambda x: PictureSize.get_by_link(x.get('url'), local_session), sizes_with_links))
     if any(pic_already_in_db):
         # Already in DB
         log(label, "Same link")
         return {'result': True, 'simpic': list(filter(lambda x: x, pic_already_in_db))[0]}
 
     sizes = list(map(lambda x: x.get('type'), sizes_with_links))
-    optimal_sizes_futures = [pool.get().apply_async(get_optimal_pair, args=(sizes_with_links, sizes, pic_id, session,)) for pic_id in Picture.get_all_ids(session)]
+    optimal_sizes_futures = [pool.get().apply_async(get_optimal_pair, args=(sizes_with_links, sizes, pic_id,)) for pic_id in Picture.get_all_ids(local_session)]
     optimal_sizes = []
     for pair in [i.get() for i in optimal_sizes_futures]:
         optimal_sizes.append(pair)
 
-    session.close()
+    local_session.close()
 
     # Starting async_pool to compare all of pictures with same size with current
     results = [pool.get().apply_async(rms_compare, args=(pic, target_url,)) for pic, target_url in optimal_sizes]
     for res, pic in [i.get() for i in results]:
         if res < 10:
             # Pictures are similar enough
-            log(label, "Already seen, has similar picture")
+            log(label, f"Already seen, has similar picture, id={pic.id}")
             return {'result': True, 'simpic': pic}
     log(label, "No similar pic, returning...")
     return {'result': False, 'simpic': None}

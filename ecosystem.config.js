@@ -1,6 +1,6 @@
 module.exports = {
   apps : [{
-    name: 'BayanBot',
+    name: 'SeenBot',
     script: 'routine.py',
     interpreter: 'python3',
     
