@@ -20,6 +20,7 @@ class User(Base):
     pic_rel = relationship("Picture", backref="user")
     phrase_rel = relationship("Phrase", backref="user")
     msg_rel = relationship("PicMessage", backref="user")
+    raw_link_rel = relationship("RawLink", backref="user")
 
     def __init__(self, id: int, **kwargs):
         super(User, self).__init__(**kwargs)

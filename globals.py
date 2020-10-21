@@ -67,3 +67,13 @@ def contains_any(s, anchors):
 
 def log(label, message):
     print(f"{timestamp()}: {label}: {message}", flush=True)
+
+
+def create_tables():
+    from libs.Phrase import Phrase
+    from libs.PicMessage import PicMessage
+    from libs.PictureSize import PictureSize
+    from libs.Picture import PictureSize
+    from libs.RawLink import RawLink
+    from libs.User import User
+    Base.metadata.create_all(engine)
