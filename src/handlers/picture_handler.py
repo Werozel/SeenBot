@@ -10,32 +10,36 @@ from libs.PicMessage import PicMessage
 
 import time
 import threading
-import requests
 
 
 label: str = "picture_handler"
+
+
+def get_optimal_pair(sizes_with_links: list, sizes: list, pic_id: int, session):
+    pic_sizes = PictureSize.get_sizes_for_id(pic_id, session)
+    common_sizes = intersection(sizes, pic_sizes)
+    max_common_size = common_sizes[-1]
+    optimal_pic: PictureSize = session.query(PictureSize) \
+        .filter(PictureSize.pic_id == pic_id, PictureSize.size == max_common_size) \
+        .first()
+    return optimal_pic, next(x.get('url') for x in sizes_with_links)
 
 
 def was_seen(sizes_with_links: list) -> dict:
     session = session_factory()
 
     # Checking whether a link is already in DB
-    pic_already_in_db = list(map(lambda x: PictureSize.get_by_link(x.get('url')), sizes_with_links))
+    pic_already_in_db = list(map(lambda x: PictureSize.get_by_link(x.get('url'), session), sizes_with_links))
     if any(pic_already_in_db):
         # Already in DB
         log(label, "Same link")
         return {'result': True, 'simpic': list(filter(lambda x: x, pic_already_in_db))[0]}
 
     sizes = list(map(lambda x: x.get('type'), sizes_with_links))
+    optimal_sizes_futures = [pool.get().apply_async(get_optimal_pair, args=(sizes_with_links, sizes, pic_id, session,)) for pic_id in Picture.get_all_ids(session)]
     optimal_sizes = []
-    for pic_id in Picture.get_all_ids():
-        pic_sizes = PictureSize.get_sizes_for_id(pic_id)
-        common_sizes = intersection(sizes, pic_sizes)
-        max_common_size = common_sizes[-1]
-        optimal_pic: PictureSize = session.query(PictureSize)\
-            .filter(PictureSize.pic_id == pic_id, PictureSize.size == max_common_size)\
-            .first()
-        optimal_sizes.append((optimal_pic, next(x.get('url') for x in sizes_with_links),))
+    for pair in [i.get() for i in optimal_sizes_futures]:
+        optimal_sizes.append(pair)
 
     session.close()
 
@@ -80,9 +84,6 @@ def process_pic(msg) -> None:
     for pic in photos:
         sizes = pic.get('sizes')  # All sizes for this picture
         pic_id = pic.get('id')
-
-        # max_size: dict = sizes[-1]  # Max size of this picture
-        # middle_size: dict = sizes[int(len(sizes) / 2)]
 
         # Checking if a max size of this picture has been already seen
         result = was_seen(sizes)
