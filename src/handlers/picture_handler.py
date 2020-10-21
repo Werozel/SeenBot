@@ -1,5 +1,6 @@
 from libs.Handler import Handler
-from globals import api, get_rand, pool, session_factory, format_time, log, get_attachments, intersection, session
+from globals import api, get_rand, pool, session_factory, format_time, log, get_attachments, intersection, \
+    session, sort_sizes
 from src.comparison import rms_compare
 from libs.PictureSize import PictureSize
 from libs.Picture import Picture
@@ -15,11 +16,11 @@ label: str = "picture_handler"
 
 
 def get_optimal_pair(sizes_with_links: list, sizes: list, pic_id: int):
-    pic_sizes = PictureSize.get_sizes_for_id(pic_id, session)
+    pic_sizes = sort_sizes(PictureSize.get_sizes_for_id(pic_id, session))
     common_sizes = intersection(sizes, pic_sizes)
-    if not common_sizes:
+    if len(common_sizes) == 0:
         log(label, f"No common sizes")
-        return None, None
+        return None
     max_common_size = common_sizes[-1]
     optimal_pic: PictureSize = session.query(PictureSize) \
         .filter(PictureSize.pic_id == pic_id, PictureSize.size == max_common_size) \
@@ -37,11 +38,11 @@ def was_seen(sizes_with_links: list) -> dict:
         log(label, "Same link")
         return {'result': True, 'simpic': list(filter(lambda x: x, pic_already_in_db))[0]}
 
-    sizes = list(map(lambda x: x.get('type'), sizes_with_links))
+    sizes = sort_sizes(list(map(lambda x: x.get('type'), sizes_with_links)))
     optimal_sizes_futures = [pool.get().apply_async(get_optimal_pair, args=(sizes_with_links, sizes, pic_id,)) for pic_id in Picture.get_all_ids(local_session)]
     optimal_sizes = []
     for pair in [i.get() for i in optimal_sizes_futures]:
-        if pair[0] and pair[1]:
+        if pair is not None:
             optimal_sizes.append(pair)
 
     local_session.close()
