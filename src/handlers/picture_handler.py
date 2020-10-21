@@ -19,7 +19,6 @@ def get_optimal_pair(sizes_with_links: list, sizes: list, pic_id: int):
     pic_sizes = sort_sizes(PictureSize.get_sizes_for_id(pic_id, session))
     common_sizes = intersection(sizes, pic_sizes)
     if len(common_sizes) == 0:
-        log(label, f"No common sizes")
         return None
     max_common_size = common_sizes[-1]
     optimal_pic: PictureSize = session.query(PictureSize) \
@@ -44,6 +43,8 @@ def was_seen(sizes_with_links: list) -> dict:
     for pair in [i.get() for i in optimal_sizes_futures]:
         if pair is not None:
             optimal_sizes.append(pair)
+        else:
+            log(label, f"No common sizes")
 
     local_session.close()
 
