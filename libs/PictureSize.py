@@ -26,3 +26,7 @@ class PictureSize(Base):
     @staticmethod
     def get_by_link(link: str, local_session=session):
         return local_session.query(PictureSize).filter(PictureSize.link == link).first()
+
+    @staticmethod
+    def get_sizes_for_id(id: int, local_session=session) -> list:
+        return list(map(lambda x: x[0], local_session.query(PictureSize.size).filter(PictureSize.pic_id == id).all()))

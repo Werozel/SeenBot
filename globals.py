@@ -77,3 +77,11 @@ def create_tables():
     from libs.RawLink import RawLink
     from libs.User import User
     Base.metadata.create_all(engine)
+
+
+def intersection(list1: list, list2: list) -> list:
+    res = []
+    for x in list1:
+        if x in list2:
+            res.append(x)
+    return res

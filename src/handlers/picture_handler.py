@@ -1,6 +1,6 @@
 from typing import List
 from libs.Handler import Handler
-from globals import api, get_rand, pool, session_factory, format_time, log, get_attachments
+from globals import api, get_rand, pool, session_factory, format_time, log, get_attachments, intersection
 from src.comparison import rms_compare
 from libs.PictureSize import PictureSize
 from libs.Picture import Picture
@@ -16,21 +16,31 @@ import requests
 label: str = "picture_handler"
 
 
-def was_seen(url: str, size: str) -> dict:
+def was_seen(sizes_with_links: list) -> dict:
     session = session_factory()
-    # Checking whether a link is already in DB 
-    pic_already_in_db = session.query(PictureSize).filter(PictureSize.link == url).first()
-    session.close()
-    if pic_already_in_db:
+
+    # Checking whether a link is already in DB
+    pic_already_in_db = list(map(lambda x: PictureSize.get_by_link(x.get('url')), sizes_with_links))
+    if any(pic_already_in_db):
         # Already in DB
         log(label, "Same link")
-        return {'result': True, 'simpic': pic_already_in_db}
-    # Not in DB
-    raw_pic = requests.get(url).content  # Getting a picture from VK
-    # Getting all pictures with same max size
-    all_pics_with_same_size: List[PictureSize] = session.query(PictureSize).filter(PictureSize.size == size).all()
+        return {'result': True, 'simpic': list(filter(lambda x: x, pic_already_in_db))[0]}
+
+    sizes = list(map(lambda x: x.get('type'), sizes_with_links))
+    optimal_sizes = []
+    for pic_id in Picture.get_all_ids():
+        pic_sizes = PictureSize.get_sizes_for_id(pic_id)
+        common_sizes = intersection(sizes, pic_sizes)
+        max_common_size = common_sizes[-1]
+        optimal_pic: PictureSize = session.query(PictureSize)\
+            .filter(PictureSize.pic_id == pic_id, PictureSize.size == max_common_size)\
+            .first()
+        optimal_sizes.append((optimal_pic, next(x.get('url') for x in sizes_with_links),))
+
+    session.close()
+
     # Starting async_pool to compare all of pictures with same size with current
-    results = [pool.get().apply_async(rms_compare, args=(i, raw_pic,)) for i in all_pics_with_same_size]
+    results = [pool.get().apply_async(rms_compare, args=(pic, target_url,)) for pic, target_url in optimal_sizes]
     for res, pic in [i.get() for i in results]:
         if res < 10:
             # Pictures are similar enough
@@ -71,17 +81,16 @@ def process_pic(msg) -> None:
         sizes = pic.get('sizes')  # All sizes for this picture
         pic_id = pic.get('id')
 
-        max_size: dict = sizes[-1]  # Max size of this picture
-        middle_size: dict = sizes[int(len(sizes) / 2)]
-        # Checking if a max size of this picture has been already seen
-        result_max = was_seen(max_size.get('url'), max_size.get('type'))
-        result_middle = was_seen(middle_size.get('url'), middle_size.get('type'))
+        # max_size: dict = sizes[-1]  # Max size of this picture
+        # middle_size: dict = sizes[int(len(sizes) / 2)]
 
-        if result_max.get('result') or result_middle.get('result'):
+        # Checking if a max size of this picture has been already seen
+        result = was_seen(sizes)
+
+        if result.get('result'):
             # Already seen
             seen = True
-            picture_size: PictureSize = result_max.get('simpic') if result_max.get('result') \
-                else result_middle.get('simpic')
+            picture_size: PictureSize = result.get('simpic')
             local_session = session_factory()
             picture: Picture = Picture.get(picture_size.pic_id) if picture_size else None
             orig_user: User = User.get(picture.user_id, local_session) if picture else None
@@ -97,7 +106,8 @@ def process_pic(msg) -> None:
             picture = Picture(pic_id, sender_id)
             session.add(picture)
             session.commit()
-            session.add(PictureSize(pic_id, max_size.get('type'), max_size.get('url')))
+            for size in sizes:
+                session.add(PictureSize(pic_id, size.get('type'), size.get('url')))
             session.add(PicMessage(sender_id, pic_id, msg.get('text')))
             session.commit()
 

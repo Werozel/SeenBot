@@ -33,3 +33,7 @@ class Picture(Base):
 
     def __repr__(self):
         return f"Picture {str(id)}: {str(self.ups)} ups, {str(self.downs)} downs"
+
+    @staticmethod
+    def get_all_ids(local_session=session) -> list:
+        return list(map(lambda x: x[0], local_session.query(Picture.id).all()))
