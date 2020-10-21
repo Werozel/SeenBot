@@ -10,6 +10,7 @@ import random
 import signal
 import pytz
 import re
+import constants
 
 engine = create_engine(f"postgresql://{config.db_username}:{config.db_password}@"
                        f"{config.db_host}:{config.db_port}/{config.db_name}")
@@ -83,5 +84,13 @@ def intersection(list1: list, list2: list) -> list:
     res = []
     for x in list1:
         if x in list2:
+            res.append(x)
+    return res
+
+
+def sort_sizes(unsorted_sizes: list) -> list:
+    res = []
+    for x in constants.size_letters:
+        if x in unsorted_sizes:
             res.append(x)
     return res
