@@ -1,6 +1,6 @@
 from typing import List
 from libs.Handler import Handler
-from globals import api, get_rand, pool, session_factory, format_time, log
+from globals import api, get_rand, pool, session_factory, format_time, log, get_attachments
 from src.comparison import rms_compare
 from libs.PictureSize import PictureSize
 from libs.Picture import Picture
@@ -14,15 +14,6 @@ import requests
 
 
 label: str = "picture_handler"
-
-
-def get_attachments(fwd) -> list:
-    if fwd is None or len(fwd) == 0:
-        return []
-    res = []
-    for msg in fwd:
-        res += msg.get('attachments') + get_attachments(msg.get('fwd_messages'))
-    return res
 
 
 def was_seen(url: str, size: str) -> dict:

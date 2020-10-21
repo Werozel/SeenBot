@@ -51,6 +51,15 @@ def get_rand() -> int:
     return random.randint(1, 9223372036854775807 - 1)
 
 
+def get_attachments(fwd) -> list:
+    if fwd is None or len(fwd) == 0:
+        return []
+    res = []
+    for msg in fwd:
+        res += msg.get('attachments') + get_attachments(msg.get('fwd_messages'))
+    return res
+
+
 # Checks if string s contains any of anchors
 def contains_any(s, anchors):
     return any(list(map(lambda x: re.search(x, s, re.IGNORECASE), anchors)))
