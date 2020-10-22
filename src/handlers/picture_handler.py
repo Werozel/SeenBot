@@ -10,12 +10,17 @@ from libs.PicMessage import PicMessage
 
 import time
 import threading
+import requests
 
 
 label: str = "picture_handler"
 
 
-def get_optimal_pair(sizes_with_links: list, sizes: list, pic_id: int):
+def load_pic(size: str, link: str):
+    return size, requests.get(link).content
+
+
+def get_optimal_pair(sizes: list, pic_id: int):
     pic_sizes = sort_sizes(PictureSize.get_sizes_for_id(pic_id, session))
     common_sizes = intersection(sizes, pic_sizes)
     if len(common_sizes) == 0:
@@ -24,7 +29,7 @@ def get_optimal_pair(sizes_with_links: list, sizes: list, pic_id: int):
     optimal_pic: PictureSize = session.query(PictureSize) \
         .filter(PictureSize.pic_id == pic_id, PictureSize.size == max_common_size) \
         .first()
-    return optimal_pic, next(x.get('url') for x in sizes_with_links)
+    return optimal_pic, max_common_size
 
 
 def was_seen(sizes_with_links: list) -> dict:
@@ -38,19 +43,25 @@ def was_seen(sizes_with_links: list) -> dict:
         return {'result': True, 'simpic': list(filter(lambda x: x, pic_already_in_db))[0]}
 
     sizes = sort_sizes(list(map(lambda x: x.get('type'), sizes_with_links)))
-    optimal_sizes_futures = [pool.get().apply_async(get_optimal_pair, args=(sizes_with_links, sizes, pic_id,)) for pic_id in Picture.get_all_ids(local_session)]
+
+    optimal_sizes_futures = [pool.get().apply_async(get_optimal_pair, args=(sizes, pic_id,)) for pic_id in Picture.get_all_ids(local_session)]
     optimal_sizes = []
     for pair in [i.get() for i in optimal_sizes_futures]:
         if pair is not None:
             optimal_sizes.append(pair)
-        else:
-            log(label, f"No common sizes")
 
     local_session.close()
 
+    if not len(optimal_sizes):
+        log(label, f"No common sizes")
+        return {'result': False, 'simpic': None}
+
+    optimal_sizes_set = set([x[1] for x in optimal_sizes])
+    sizes_raw_cache = dict([x.get() for x in [pool.get().apply_async(load_pic, args=(pic_size, next(iter([x.get('url') for x in sizes_with_links if x.get('type') == pic_size]),))) for pic_size in optimal_sizes_set]])
+
     # Starting async_pool to compare all of pictures with same size with current
     log(label, f"Checking {len(optimal_sizes)} pictures")
-    results = [pool.get().apply_async(rms_compare, args=(pic, target_url,)) for pic, target_url in optimal_sizes]
+    results = [pool.get().apply_async(rms_compare, args=(pic, sizes_raw_cache.get(max_common_size),)) for pic, max_common_size in optimal_sizes]
     for res, pic in [i.get() for i in results]:
         if res < 10:
             # Pictures are similar enough

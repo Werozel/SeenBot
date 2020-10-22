@@ -6,12 +6,11 @@ from io import BytesIO
 from libs.PictureSize import PictureSize
 
 
-def rms_compare(pic: PictureSize, url) -> (float, str,):
+def rms_compare(pic: PictureSize, raw_pic) -> (float, str,):
     pic_url: str = pic.link
     response1 = requests.get(pic_url)
-    response2 = requests.get(url)
     image1 = Image.open(BytesIO(response1.content))
-    image2 = Image.open(BytesIO(response2.content))
+    image2 = Image.open(BytesIO(raw_pic))
     diff = ImageChops.difference(image1, image2)
     h = diff.histogram()
     sq = (value*((idx % 256)**2) for idx, value in enumerate(h))
