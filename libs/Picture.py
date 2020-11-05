@@ -37,3 +37,7 @@ class Picture(Base):
     @staticmethod
     def get_all_ids(local_session=session) -> list:
         return list(map(lambda x: x[0], local_session.query(Picture.id).all()))
+
+    @staticmethod
+    def get_pics_count(local_session=session) -> int:
+        return len(Picture.get_all_ids(local_session))
