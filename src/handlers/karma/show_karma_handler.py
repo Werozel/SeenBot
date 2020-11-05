@@ -14,7 +14,7 @@ def process_func(msg):
     stats: list = list(map(lambda x: x.show_stat(),
                            sorted(users,
                                   reverse=True,
-                                  key=lambda user: (user.ups / user.downs) * user.all_pics if user.downs > 0 else 0)
+                                  key=lambda user: (user.ups / user.downs) * (user.ups + user.downs) if user.downs > 0 else 0)
                            ))
     stat_str = '\n'.join(stats)
     peer_id = msg.get('peer_id')
