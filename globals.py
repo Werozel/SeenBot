@@ -14,8 +14,7 @@ import constants
 
 engine = create_engine(f"postgresql://{config.db_username}:{config.db_password}@"
                        f"{config.db_host}:{config.db_port}/{config.db_name}")
-session_factory = sessionmaker()
-session_factory.configure(bind=engine)
+session_factory = sessionmaker(bind=engine)
 session = session_factory()
 Base = declarative_base()
 

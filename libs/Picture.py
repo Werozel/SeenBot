@@ -11,6 +11,7 @@ class Picture(Base):
     id = Column(Integer, primary_key=True)
     ups = Column(Integer, default=0)
     downs = Column(Integer, default=0)
+    bads = Column(Integer, default=0)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     add_time = Column(TIMESTAMP, default=timestamp())
 
@@ -20,7 +21,7 @@ class Picture(Base):
     def __init__(self, id: int, user_id: int, **kwargs):
         super(Picture, self).__init__(**kwargs)
         self.id = id
-        self.ups = self.downs = 0
+        self.ups = self.downs = self.bads = 0
         self.user_id = user_id
         self.add_time = timestamp()
 
@@ -32,7 +33,7 @@ class Picture(Base):
         return local_session.query(PictureSize).filter_by(PictureSize.pic_id == self.id).all()
 
     def __repr__(self):
-        return f"Picture {str(id)}: {str(self.ups)} ups, {str(self.downs)} downs"
+        return f"Picture {str(id)}: {str(self.ups)} ups, {str(self.downs)} downs, {str(self.downs)} bads"
 
     @staticmethod
     def get_all_ids(local_session=session) -> list:
@@ -41,3 +42,5 @@ class Picture(Base):
     @staticmethod
     def get_pics_count(local_session=session) -> int:
         return len(Picture.get_all_ids(local_session))
+
+
