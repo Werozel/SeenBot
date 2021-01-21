@@ -37,6 +37,6 @@ if __name__ == "__main__":
             print(traceback.format_exc())
             exiting = True
     
-    globals.session.close()
+    globals.session.close_all()
     globals.engine.dispose()
     globals.pool.get().close()

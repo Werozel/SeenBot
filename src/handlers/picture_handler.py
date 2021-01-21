@@ -95,7 +95,7 @@ def process_pic(msg) -> None:
     # Message that will be sent to chat if picture has been already seen
     seen_message = Phrase.get_random().split(':')[1].strip() + '\n'
 
-    seen: bool = False
+    seen: int = 0
     start_time = time.time()
     # Count of seen pictures
     for pic in photos:
@@ -107,17 +107,17 @@ def process_pic(msg) -> None:
 
         if result.get('result'):
             # Already seen
-            seen = True
+            seen += 1
             picture_size: PictureSize = result.get('simpic')
             local_session = session_factory()
             picture: Picture = Picture.get(picture_size.pic_id) if picture_size else None
+            user.bads += picture.bads
             orig_user: User = User.get(picture.user_id, local_session) if picture else None
             if orig_user:
                 seen_message += f'Отправил  {orig_user.first_name}' \
                                 f' {orig_user.last_name}  в' \
                                 f'  {format_time(picture_size.add_time)}\n'
             local_session.close()
-            break
         else:
             # New picture
             # Adding it to the DB
@@ -135,7 +135,7 @@ def process_pic(msg) -> None:
     # Adding negative carma for each seen picture
 
     # Sending a message if any picture was not new
-    if seen:
+    if seen > 0:
         log(label, f"{user.first_name} {user.last_name} downs +1 = {user.downs}")
         user.downs += 1
         peer_id = msg.get('peer_id')
