@@ -57,7 +57,7 @@ class User(Base):
                f"{str(self.downs)} downs, {str(self.bads)} bads, {str(self.all_pics)} all"
 
     def show_stat(self) -> str:
-        return f"{self.first_name}: {self.ups}↑ {self.downs}↓ {self.bads}🪗 всего: {self.all_pics}"
+        return f"{self.first_name}: {self.ups}↑ {self.downs}↓ {self.bads}💩 всего: {self.all_pics}"
 
     # Returns latest pic sent by this user
     def __get_latest_pic(self):
