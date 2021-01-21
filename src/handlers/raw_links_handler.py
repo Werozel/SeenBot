@@ -25,9 +25,10 @@ def process_func(msg):
     for att in atts:
         type = att.get('type')
         obj = att.get(type)
+        owner_id = att.get('owner_id')
         id = obj.get('id')
         existing_obj: RawLink = RawLink.get(id)
-        if existing_obj:
+        if existing_obj and existing_obj.owner_id == owner_id:
             orig_user: User = User.get(existing_obj.user_id)
             orig_user.downs += 1
             session.add(orig_user)
