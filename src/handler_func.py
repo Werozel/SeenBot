@@ -13,6 +13,7 @@ from src.handlers.mashup_hangler import handler as mashup_handler
 from src.handlers.raw_links_handler import handler as raw_links_handler
 from src.handlers.karma.add_bads_karma import handler as bads_handler
 from src.handlers.vrp_handler import handler as vrp_handler
+from src.handlers.tops.montly_top_handler import handler as monthly_top_handler
 
 handlers = []
 
@@ -42,3 +43,4 @@ def init_handlers():
     add_handler(raw_links_handler)
     add_handler(bads_handler)
     add_handler(vrp_handler)
+    add_handler(monthly_top_handler)

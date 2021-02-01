@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import Column, Integer, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
 from globals import Base, timestamp, session
@@ -49,3 +51,15 @@ class Picture(Base):
     def get_random_pic(local_session=session):
         # TODO: Use sql method
         return random.choice(local_session.query(Picture).all())
+
+    @staticmethod
+    def get_all_from(start_dt: datetime.datetime, local_session=session):
+        # TODO: order asc Picture.ups & order dec Picture.downs + Picture.bads
+        return local_session\
+            .query(Picture)\
+            .filter(
+                Picture.add_time > start_dt    # TODO: check if works
+            )\
+            .order_by(Picture.ups)\
+            .limit(10)\
+            .all()
