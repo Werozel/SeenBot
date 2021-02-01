@@ -63,3 +63,13 @@ class Picture(Base):
             .order_by(Picture.ups)\
             .limit(10)\
             .all()
+
+    @staticmethod
+    def get_best_for_user(user_id, local_session=session):
+        # TODO: order asc Picture.ups & order dec Picture.downs + Picture.bads
+        return local_session \
+            .query(Picture) \
+            .filter_by(Picture.user_id == user_id) \
+            .order_by(Picture.ups) \
+            .limit(10) \
+            .all()
