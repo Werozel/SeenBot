@@ -4,6 +4,8 @@ from globals import Base, timestamp, session
 from libs.PictureSize import PictureSize
 from libs.PicMessage import PicMessage
 
+import random
+
 
 class Picture(Base):
     __tablename__ = 'pictures'
@@ -43,4 +45,7 @@ class Picture(Base):
     def get_pics_count(local_session=session) -> int:
         return len(Picture.get_all_ids(local_session))
 
-
+    @staticmethod
+    def get_random_pic(local_session=session):
+        # TODO: Use sql method
+        return random.choice(local_session.query(Picture).all())

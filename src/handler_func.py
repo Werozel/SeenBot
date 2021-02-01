@@ -12,6 +12,7 @@ from src.handlers.karma.add_negative_karma import handler as add_negative_karma
 from src.handlers.mashup_hangler import handler as mashup_handler
 from src.handlers.raw_links_handler import handler as raw_links_handler
 from src.handlers.karma.add_bads_karma import handler as bads_handler
+from src.handlers.vrp_handler import handler as vrp_handler
 
 handlers = []
 
@@ -40,3 +41,4 @@ def init_handlers():
     add_handler(mashup_handler)
     add_handler(raw_links_handler)
     add_handler(bads_handler)
+    add_handler(vrp_handler)

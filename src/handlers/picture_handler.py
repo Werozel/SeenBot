@@ -83,14 +83,14 @@ def process_pic(msg) -> None:
     # Leaving only the photos
     photos = list(map(lambda x: x.get('photo'), list(filter(lambda x: x.get('type') == 'photo', attachments))))
     # New thread - new session
-    session = session_factory()
+    outer_session = session_factory()
     sender_id = msg.get('from_id')
     # Getting the user from DB or creating a new one
-    user: User = session.query(User).filter(User.id == sender_id).first()
+    user: User = outer_session.query(User).filter(User.id == sender_id).first()
     if not User:
         user = User(sender_id)
-        session.add(user)
-        session.commit()
+        outer_session.add(user)
+        outer_session.commit()
     user.all_pics += len(photos)
     # Message that will be sent to chat if picture has been already seen
     seen_message = Phrase.get_random().split(':')[1].strip() + '\n'
@@ -122,12 +122,12 @@ def process_pic(msg) -> None:
             # New picture
             # Adding it to the DB
             picture = Picture(pic_id, sender_id)
-            session.add(picture)
-            session.commit()
+            outer_session.add(picture)
+            outer_session.commit()
             for size in sizes:
-                session.add(PictureSize(pic_id, size.get('type'), size.get('url')))
-            session.add(PicMessage(sender_id, pic_id, msg.get('text')))
-            session.commit()
+                outer_session.add(PictureSize(pic_id, size.get('type'), size.get('url')))
+            outer_session.add(PicMessage(sender_id, pic_id, msg.get('text')))
+            outer_session.commit()
 
     end_time = time.time()
     log(label, f"Checked in {end_time - start_time}")
@@ -143,9 +143,9 @@ def process_pic(msg) -> None:
                           message=seen_message,
                           random_id=get_rand())
 
-    session.add(user)
-    session.commit()
-    session.close()
+    outer_session.add(user)
+    outer_session.commit()
+    outer_session.close()
 
 
 def process_func(msg):
