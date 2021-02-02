@@ -2,6 +2,8 @@ import datetime
 
 from sqlalchemy import Column, Integer, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
+
+from constants import COMMUNITY_ID
 from globals import Base, timestamp, session
 from libs.PictureSize import PictureSize
 from libs.PicMessage import PicMessage
@@ -38,6 +40,9 @@ class Picture(Base):
 
     def __repr__(self):
         return f"Picture {str(id)}: {str(self.ups)} ups, {str(self.downs)} downs, {str(self.downs)} bads"
+
+    def to_api_string(self):
+        return f"photo{COMMUNITY_ID}_{self.id}"
 
     @staticmethod
     def get_all_ids(local_session=session) -> list:

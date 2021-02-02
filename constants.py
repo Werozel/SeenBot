@@ -8,3 +8,5 @@ bot_help = "Кидаешь баян - получаешь диз\n\n" \
 
 
 size_letters = ['m', 'o', 'p', 'q', 'r', 's', 'x', 'y', 'z']
+
+COMMUNITY_ID = -188481255
