@@ -31,6 +31,7 @@ class Picture(Base):
 
     picSize_rel = relationship("PictureSize", backref="picture")
     msg_rel = relationship("PicMessage", backref="picture")
+    downloaded_pic_rel = relationship("DownloadedPic", backref='picture')
 
     def __init__(self, id: int, user_id: int, owner_id: int, access_key: str, **kwargs):
         super(Picture, self).__init__(**kwargs)
@@ -73,15 +74,15 @@ class Picture(Base):
         return random.choice(local_session.query(Picture).all())
 
     @staticmethod
-    def get_all_from(start_dt: datetime.datetime, local_session=session) -> List['Picture']:
+    def get_all_from(start_dt: datetime.datetime, local_session=session, limit: int = None) -> List['Picture']:
         # TODO: order asc Picture.ups & order dec Picture.downs + Picture.bads
         return local_session\
             .query(Picture)\
             .filter(
-                Picture.add_time > start_dt    # TODO: check if works
+                Picture.add_time > start_dt
             )\
             .order_by(Picture.ups)\
-            .limit(10)\
+            .limit(limit)\
             .all()
 
     @staticmethod
@@ -95,13 +96,14 @@ class Picture(Base):
             .all()
 
     def get_api_string(self, peer_id: str, local_session=session) -> str:
-        downloaded_pic: Optional[DownloadedPic] = DownloadedPic.get(self.id, local_session)
+        downloaded_pic: Optional[DownloadedPic] = DownloadedPic.get_by_pic_id(self.id, local_session)
         if downloaded_pic is None:
             file_name = wget.download(self.get_best_size(local_session).link)
             photo_obj: dict = vk_upload.photo_messages(file_name, peer_id=peer_id)[0]
             os.remove(file_name)
             downloaded_pic = DownloadedPic(
                 id=photo_obj.get('id'),
+                picture_id=self.id,
                 album_id=photo_obj.get('album_id'),
                 owner_id=photo_obj.get('owner_id'),
                 access_key=photo_obj.get('access_key')

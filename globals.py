@@ -38,6 +38,10 @@ def timestamp() -> datetime.datetime:
     return datetime.datetime.now(tz)
 
 
+def get_month_start() -> datetime.datetime:
+    return timestamp().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+
 def format_time(date: datetime.datetime) -> str:
     return date.strftime("%H:%M,  %d %b")
 
