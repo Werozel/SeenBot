@@ -14,15 +14,11 @@ def process_func(msg):
     peer_id = msg.get('peer_id')
     local_session = session_factory()
     month_start_dt = get_month_start()
-    pictures_from_month_start = Picture.get_all_from(month_start_dt, local_session, limit=10)
+    pictures_from_month_start = Picture.get_all_from_date_ordered(month_start_dt, local_session, limit=10)
     attachment_strings = list(
         map(
             lambda x: x.get_api_string(peer_id),
-            sorted(
-                pictures_from_month_start,
-                reverse=True,
-                key=lambda pic: (pic.ups / pic.downs) * (pic.ups + pic.downs) if pic.downs > 0 else 0
-            )
+            pictures_from_month_start
         )
     )
     local_session.close()

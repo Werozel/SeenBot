@@ -74,25 +74,31 @@ class Picture(Base):
         return random.choice(local_session.query(Picture).all())
 
     @staticmethod
-    def get_all_from(start_dt: datetime.datetime, local_session=session, limit: int = None) -> List['Picture']:
-        # TODO: order asc Picture.ups & order dec Picture.downs + Picture.bads
+    def get_all_from_date_ordered(
+        start_dt: datetime.datetime,
+        local_session=session,
+        limit: int = None
+    ) -> List['Picture']:
         return local_session\
             .query(Picture)\
             .filter(
                 Picture.add_time > start_dt
             )\
-            .order_by(Picture.ups)\
+            .order_by(
+                -(Picture.ups / (Picture.downs + 1)) * (Picture.ups + Picture.downs)
+            )\
             .limit(limit)\
             .all()
 
     @staticmethod
-    def get_best_for_user(user_id, local_session=session) -> List['Picture']:
-        # TODO: order asc Picture.ups & order dec Picture.downs + Picture.bads
+    def get_best_for_user(user_id, local_session=session, limit: int = None) -> List['Picture']:
         return local_session \
             .query(Picture) \
             .filter_by(Picture.user_id == user_id) \
-            .order_by(Picture.ups) \
-            .limit(10) \
+            .order_by(
+                -(Picture.ups / (Picture.downs + 1)) * (Picture.ups + Picture.downs)
+            )\
+            .limit(limit) \
             .all()
 
     def get_api_string(self, peer_id: str, local_session=session) -> str:
