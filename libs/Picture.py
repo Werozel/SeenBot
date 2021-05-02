@@ -2,13 +2,12 @@ import datetime
 from typing import Optional, List
 
 from sqlalchemy import Column, Integer, ForeignKey, TIMESTAMP, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Session
+from sqlalchemy.sql.expression import func
 
-from constants import COMMUNITY_ID
 from globals import Base, timestamp, session, vk_upload
 from libs.PictureSize import PictureSize
 from libs.DownloadedPic import DownloadedPic
-from libs.PicMessage import PicMessage
 
 from constants import size_letters
 
@@ -69,9 +68,11 @@ class Picture(Base):
         return len(Picture.get_all_ids(local_session))
 
     @staticmethod
-    def get_random_pic(local_session=session):
-        # TODO: Use sql method
-        return random.choice(local_session.query(Picture).all())
+    def get_random_pic(local_session: Session = session):
+        return local_session \
+            .query(Picture) \
+            .order_by(func.random()) \
+            .first()
 
     @staticmethod
     def get_all_from_date_ordered(
