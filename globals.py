@@ -19,6 +19,7 @@ session = session_factory()
 Base = declarative_base()
 
 vk_session = vk_api.VkApi(token=config.vk_secret)
+vk_upload = vk_api.upload.VkUpload(vk_session)
 longpoll = VkBotLongPoll(vk_session, config.vk_groupId)
 api = vk_session.get_api()
 
@@ -76,6 +77,7 @@ def create_tables():
     from libs.Picture import PictureSize
     from libs.RawLink import RawLink
     from libs.User import User
+    from libs.DownloadedPic import DownloadedPic
     Base.metadata.create_all(engine)
 
 

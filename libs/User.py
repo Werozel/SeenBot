@@ -4,6 +4,7 @@ from globals import Base, api, session, timestamp
 from libs.Picture import Picture
 from libs.Phrase import Phrase
 from libs.PicMessage import PicMessage
+from libs.DownloadedPic import DownloadedPic
 
 
 class User(Base):
@@ -22,6 +23,7 @@ class User(Base):
     phrase_rel = relationship("Phrase", backref="user")
     msg_rel = relationship("PicMessage", backref="user")
     raw_link_rel = relationship("RawLink", backref="user")
+    downloaded_pic_rel = relationship("DownloadedPic", backref='user')
 
     def __init__(self, id: int, **kwargs):
         super(User, self).__init__(**kwargs)

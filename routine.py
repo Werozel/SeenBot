@@ -31,12 +31,13 @@ if __name__ == "__main__":
                     if event.type == VkBotEventType.MESSAGE_NEW and event.from_chat:
                         msg = event.obj.message
                         handlers.handle_msg(msg)
-        except TimeoutError:
+        except TimeoutError as e:
+            print(traceback.format_exc(e))
             pass
         except Exception as e:
-            print(traceback.format_exc())
+            print(traceback.format_exc(e))
             exiting = True
-    
+
     globals.session.close_all()
     globals.engine.dispose()
     globals.pool.get().close()

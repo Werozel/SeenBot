@@ -121,7 +121,12 @@ def process_pic(msg) -> None:
         else:
             # New picture
             # Adding it to the DB
-            picture = Picture(pic_id, sender_id)
+            picture = Picture(
+                pic_id,
+                sender_id,
+                pic.get('owner_id'),
+                pic.get('access_key')
+            )
             outer_session.add(picture)
             outer_session.commit()
             for size in sizes:
