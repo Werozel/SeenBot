@@ -1,8 +1,9 @@
-from globals import api, get_rand, session
+from typing import Optional
+
+from globals import api, get_rand, session_factory
+from libs.User import User
 from libs.Handler import Handler
 from libs.Picture import Picture
-
-import datetime
 
 
 def check_func(msg):
@@ -11,11 +12,21 @@ def check_func(msg):
 
 
 def process_func(msg):
-    Picture.get_best_for_user(msg.get('from_id'), session)
-    # TODO: Add all pictures
     peer_id = msg.get('peer_id')
+    local_session = session_factory()
+    user_id: int = msg.get('from_id')
+    user: Optional[User] = User.get(user_id, local_session)
+    best_pictures = Picture.get_best_for_user(user_id, local_session, limit=10)
+    attachment_strings = list(
+        map(
+            lambda x: x.get_api_string(peer_id),
+            best_pictures
+        )
+    )
+    local_session.close()
     api.messages.send(peer_id=peer_id,
-                      message="Готово",
+                      message=f"{user.get_formatted_name()}: топ",
+                      attachment=','.join(attachment_strings),
                       random_id=get_rand())
 
 

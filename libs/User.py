@@ -61,6 +61,9 @@ class User(Base):
     def show_stat(self) -> str:
         return f"{self.first_name}: {self.ups}↑ {self.downs}↓ {self.bads}💩 всего: {self.all_pics}"
 
+    def get_formatted_name(self) -> str:
+        return f"{self.first_name} {self.last_name}"
+
     # Returns latest pic sent by this user
     def __get_latest_pic(self):
         pass

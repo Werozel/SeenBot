@@ -94,7 +94,7 @@ class Picture(Base):
     def get_best_for_user(user_id, local_session=session, limit: int = None) -> List['Picture']:
         return local_session \
             .query(Picture) \
-            .filter_by(Picture.user_id == user_id) \
+            .filter(Picture.user_id == user_id) \
             .order_by(
                 -(Picture.ups / (Picture.downs + 1)) * (Picture.ups + Picture.downs)
             )\
