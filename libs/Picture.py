@@ -5,13 +5,16 @@ from sqlalchemy import Column, Integer, ForeignKey, TIMESTAMP, String
 from sqlalchemy.orm import relationship
 
 from constants import COMMUNITY_ID
-from globals import Base, timestamp, session
+from globals import Base, timestamp, session, vk_upload
 from libs.PictureSize import PictureSize
+from libs.DownloadedPic import DownloadedPic
 from libs.PicMessage import PicMessage
 
 from constants import size_letters
 
 import random
+import os
+import wget
 
 
 class Picture(Base):
@@ -56,9 +59,6 @@ class Picture(Base):
     def __repr__(self):
         return f"Picture {str(id)}: {str(self.ups)} ups, {str(self.downs)} downs, {str(self.downs)} bads"
 
-    def to_api_string(self) -> Optional[str]:
-        return f"photo{self.owner_id}_{self.id}" if self.owner_id else None
-
     @staticmethod
     def get_all_ids(local_session=session) -> list:
         return list(map(lambda x: x[0], local_session.query(Picture.id).all()))
@@ -93,3 +93,20 @@ class Picture(Base):
             .order_by(Picture.ups) \
             .limit(10) \
             .all()
+
+    def get_api_string(self, peer_id: str, local_session=session) -> str:
+        downloaded_pic: Optional[DownloadedPic] = DownloadedPic.get(self.id, local_session)
+        if downloaded_pic is None:
+            file_name = wget.download(self.get_best_size(local_session).link)
+            photo_obj: dict = vk_upload.photo_messages(file_name, peer_id=peer_id)[0]
+            os.remove(file_name)
+            downloaded_pic = DownloadedPic(
+                id=photo_obj.get('id'),
+                album_id=photo_obj.get('album_id'),
+                owner_id=photo_obj.get('owner_id'),
+                access_key=photo_obj.get('access_key')
+            )
+            local_session.add(downloaded_pic)
+            local_session.commit()
+
+        return downloaded_pic.get_api_str()

@@ -42,6 +42,10 @@ def format_time(date: datetime.datetime) -> str:
     return date.strftime("%H:%M,  %d %b")
 
 
+def format_vrp_time(date: datetime.datetime) -> str:
+    return date.strftime("%d %b %Y")
+
+
 def days_between(date1: datetime.datetime, date2: datetime.datetime) -> int:
     d1 = date1.replace(tzinfo=None)
     d2 = date2.replace(tzinfo=None)
