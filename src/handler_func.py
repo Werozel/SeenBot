@@ -15,6 +15,7 @@ from src.handlers.karma.add_bads_karma import handler as bads_handler
 from src.handlers.vrp_handler import handler as vrp_handler
 from src.handlers.tops.montly_top_handler import handler as monthly_top_handler
 from src.handlers.tops.users_best_handler import handler as users_best_handler
+from src.handlers.test_error_handler import handler as test_error_handler
 
 handlers = []
 
@@ -45,3 +46,4 @@ def init_handlers():
     add_handler(vrp_handler)
     add_handler(monthly_top_handler)
     add_handler(users_best_handler)
+    # add_handler(test_error_handler)

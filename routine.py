@@ -1,9 +1,6 @@
 import globals
 from PIL import ImageFile
-from libs.User import User
-from libs.Picture import Picture
 from vk_api.bot_longpoll import VkBotEventType
-from libs.ProcessPool import ProcessPool
 import src.handler_func as handlers
 import traceback
 import multiprocessing
@@ -31,13 +28,14 @@ if __name__ == "__main__":
                     if event.type == VkBotEventType.MESSAGE_NEW and event.from_chat:
                         msg = event.obj.message
                         handlers.handle_msg(msg)
-        except TimeoutError as e:
-            print(traceback.format_exc(e))
+        except TimeoutError:
+            print(traceback.format_exc())
             pass
-        except Exception as e:
-            print(traceback.format_exc(e))
-            exiting = True
+        except Exception:
+            print(traceback.format_exc())
+            break
 
     globals.session.close_all()
     globals.engine.dispose()
     globals.pool.get().close()
+    sys.exit(0)
