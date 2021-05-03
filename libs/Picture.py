@@ -11,7 +11,6 @@ from libs.DownloadedPic import DownloadedPic
 
 from constants import size_letters
 
-import random
 import os
 import wget
 
@@ -77,7 +76,7 @@ class Picture(Base):
     @staticmethod
     def get_all_from_date_ordered(
         start_dt: datetime.datetime,
-        local_session=session,
+        local_session: Session = session,
         limit: int = None
     ) -> List['Picture']:
         return local_session\
@@ -92,7 +91,7 @@ class Picture(Base):
             .all()
 
     @staticmethod
-    def get_best_for_user(user_id, local_session=session, limit: int = None) -> List['Picture']:
+    def get_best_for_user(user_id, local_session: Session = session, limit: int = None) -> List['Picture']:
         return local_session \
             .query(Picture) \
             .filter(Picture.user_id == user_id) \

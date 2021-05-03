@@ -25,8 +25,7 @@ def add_handler(handler: Handler):
 
 def handle_msg(msg):
     for handler in handlers:
-        if handler.check(msg):
-            handler.process(msg)
+        handler.handle_message(msg)
 
 
 def init_handlers():
