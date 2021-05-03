@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy import Column, Integer, VARCHAR, TIMESTAMP
 from sqlalchemy.orm import relationship
 from globals import Base, api, session, timestamp
@@ -45,7 +47,9 @@ class User(Base):
             self.add_time = user.add_time
 
     @staticmethod
-    def get(id: int, local_session=session):
+    def get(id: int, local_session=session) -> Optional['User']:
+        if id < 0:
+            return None
         return local_session.query(User).filter(User.id == id).first()
 
     def get_pics(self, local_session=session):

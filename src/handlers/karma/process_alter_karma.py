@@ -13,6 +13,8 @@ class Karma(Enum):
 def process_func(msg, karma: Karma, label: str):
     reply_msg = msg.get('reply_message')
     reply_msg_from_id = reply_msg.get('from_id')
+    if reply_msg_from_id < 0:
+        return
     user = User.get(reply_msg_from_id)
     if not user:
         user = User(reply_msg_from_id)
