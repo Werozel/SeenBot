@@ -25,7 +25,7 @@ if __name__ == "__main__":
         try:
             while True:
                 for event in globals.longpoll.listen():
-                    if event.type == VkBotEventType.MESSAGE_NEW and event.from_chat:
+                    if event.type == VkBotEventType.MESSAGE_NEW:
                         msg = event.obj.message
                         handlers.handle_msg(msg)
         except TimeoutError:

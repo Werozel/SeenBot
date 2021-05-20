@@ -9,13 +9,13 @@ from src.handlers.picture_handler import handler as picture_handler
 from src.handlers.karma.show_karma_handler import handler as show_karma_handler
 from src.handlers.karma.add_positive_karma import handler as add_positive_karma
 from src.handlers.karma.add_negative_karma import handler as add_negative_karma
-from src.handlers.mashup_hangler import handler as mashup_handler
+from src.handlers.mashups.boobey_mashup_hangler import handler as boobey_mashup_handler
 from src.handlers.raw_links_handler import handler as raw_links_handler
 from src.handlers.karma.add_bads_karma import handler as bads_handler
 from src.handlers.vrp_handler import handler as vrp_handler
 from src.handlers.tops.montly_top_handler import handler as monthly_top_handler
 from src.handlers.tops.users_best_handler import handler as users_best_handler
-from src.handlers.test_error_handler import handler as test_error_handler
+from src.handlers.mashups.random_mashup_handler import handler as random_mashup_handler
 
 handlers = []
 
@@ -40,10 +40,11 @@ def init_handlers():
     add_handler(show_karma_handler)
     add_handler(add_positive_karma)
     add_handler(add_negative_karma)
-    add_handler(mashup_handler)
+    add_handler(boobey_mashup_handler)
     add_handler(raw_links_handler)
     add_handler(bads_handler)
     add_handler(vrp_handler)
     add_handler(monthly_top_handler)
     add_handler(users_best_handler)
+    add_handler(random_mashup_handler)
     # add_handler(test_error_handler)

@@ -46,6 +46,8 @@ def process_func(msg):
                 type=type,
                 owner_id=obj.get('owner_id'),
                 access_key=obj.get('access_key'),
+                track_code=obj.get('track_code'),
+                url=obj.get('url'),
                 user_id=msg.get('from_id')
             )
             session.add(new_raw_link_obj)

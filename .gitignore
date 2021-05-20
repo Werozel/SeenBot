@@ -1,5 +1,5 @@
 # config files
-config*
+*config*
 
 # vscode
 .vscode/
