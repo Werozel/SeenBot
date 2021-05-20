@@ -41,16 +41,18 @@ def process_func(msg):
                               random_id=get_rand())
             session.add(orig_user)
         else:
-            new_raw_link_obj = RawLink(
-                id=obj.get('id'),
-                type=type,
-                owner_id=obj.get('owner_id'),
-                access_key=obj.get('access_key'),
-                track_code=obj.get('track_code'),
-                url=obj.get('url'),
-                user_id=msg.get('from_id')
-            )
-            session.add(new_raw_link_obj)
+            raw_link_id = obj.get('id')
+            if RawLink.get(raw_link_id) is None:
+                new_raw_link_obj = RawLink(
+                    id=raw_link_id,
+                    type=type,
+                    owner_id=obj.get('owner_id'),
+                    access_key=obj.get('access_key'),
+                    track_code=obj.get('track_code'),
+                    url=obj.get('url'),
+                    user_id=msg.get('from_id')
+                )
+                session.add(new_raw_link_obj)
     session.commit()
 
 
