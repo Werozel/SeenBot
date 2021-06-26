@@ -5,6 +5,13 @@ import random
 from src.balabola_api import get_random_text, StylesEnum
 
 mashup_phrases = ["Пиздец", "Полный пиздец", "Пиздец нахуй", "Ебанутый"]
+balabola_phrases = [
+    "Мэшап послушан",
+    "Заскамил мамонта его имя Иван Убеев",
+    "Иван Убеев",
+    "Пожилой абоба",
+    "Неизвестен - Без названия"
+]
 
 
 def check_func(msg):
@@ -16,10 +23,16 @@ def check_func(msg):
 
 def process_func(msg):
     peer_id = msg.get('peer_id')
-    phrase = random.choice(mashup_phrases)
-    random_text = get_random_text(phrase, random.choice(list(StylesEnum)))
+    random_text = get_random_text(
+        random.choice(balabola_phrases),
+        random.choice(list(StylesEnum))
+    )
+    if random_text:
+        phrase = random_text
+    else:
+        phrase = random.choice(mashup_phrases)
     api.messages.send(peer_id=peer_id,
-                      message=random_text,
+                      message=phrase,
                       random_id=get_rand())
 
 
