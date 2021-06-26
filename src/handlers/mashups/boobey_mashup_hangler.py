@@ -2,6 +2,7 @@ from libs.Handler import Handler
 from globals import api, get_attachments, get_rand
 import random
 
+from src.balabola_api import get_random_text, StylesEnum
 
 mashup_phrases = ["Пиздец", "Полный пиздец", "Пиздец нахуй", "Ебанутый"]
 
@@ -15,8 +16,10 @@ def check_func(msg):
 
 def process_func(msg):
     peer_id = msg.get('peer_id')
+    phrase = random.choice(mashup_phrases)
+    random_text = get_random_text(phrase, random.choice(list(StylesEnum)))
     api.messages.send(peer_id=peer_id,
-                      message=random.choice(mashup_phrases),
+                      message=random_text,
                       random_id=get_rand())
 
 
