@@ -1,4 +1,6 @@
-from globals import Base, timestamp
+from typing import List
+
+from globals import Base, timestamp, session
 from sqlalchemy import Column, Integer, VARCHAR, TIMESTAMP, ForeignKey
 
 
@@ -18,3 +20,7 @@ class PicMessage(Base):
         self.pic_id = picture_id
         self.time = timestamp()
         self.text = text
+
+    @staticmethod
+    def get_all() -> List['PicMessage']:
+        return session.query(PicMessage).all()

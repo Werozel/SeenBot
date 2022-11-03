@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy import Column, Integer, VARCHAR, TIMESTAMP
 from sqlalchemy.orm import relationship
@@ -51,6 +51,10 @@ class User(Base):
         if id < 0:
             return None
         return local_session.query(User).filter(User.id == id).first()
+
+    @staticmethod
+    def get_all(local_session=session) -> List['User']:
+        return session.query(User).all()
 
     def get_pics(self, local_session=session):
         return local_session.query(Picture).filter(Picture.id == self.id).all()

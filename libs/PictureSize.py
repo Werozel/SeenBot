@@ -30,3 +30,7 @@ class PictureSize(Base):
     @staticmethod
     def get_sizes_for_id(id: int, local_session=session) -> list:
         return list(map(lambda x: x[0], local_session.query(PictureSize.size).filter(PictureSize.pic_id == id).all()))
+
+    @staticmethod
+    def get_all(local_session=session) -> list['PictureSize']:
+        return local_session.query(PictureSize).all()

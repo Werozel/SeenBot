@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from globals import Base
 from sqlalchemy import Column, String, ForeignKey, Integer
@@ -16,9 +16,13 @@ class DownloadedPic(Base):
     owner_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     access_key = Column(String, nullable=True)
 
+    def get_api_str(self):
+        return f"photo{self.owner_id}_{self.id}" + (f"_{self.access_key}" if self.access_key else "")
+
     @staticmethod
     def get_by_pic_id(id: int, local_session: Session = session) -> Optional['DownloadedPic']:
         return local_session.query(DownloadedPic).filter(DownloadedPic.picture_id == id).first()
 
-    def get_api_str(self):
-        return f"photo{self.owner_id}_{self.id}" + (f"_{self.access_key}" if self.access_key else "")
+    @staticmethod
+    def get_all() -> List['DownloadedPic']:
+        return session.query(DownloadedPic).all()

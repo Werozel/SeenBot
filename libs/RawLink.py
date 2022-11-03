@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 import wget
 from sqlalchemy.orm import Session
@@ -48,6 +49,10 @@ class RawLink(Base):
     @staticmethod
     def get_all_with_type(type: str, local_session=session) -> list:
         return local_session.query(RawLink).filter(RawLink.type == type).all()
+
+    @staticmethod
+    def get_all(local_session=session) -> List['RawLink']:
+        return local_session.query(RawLink).all()
 
     def get_attachment_string(self) -> str:
         return f"{self.type}{self.owner_id}_{self.id}{ f'_{self.access_key}' if self.access_key else '' }"
