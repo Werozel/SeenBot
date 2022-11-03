@@ -12,7 +12,7 @@ mccabe==0.6.1
 Pillow==9.0.1
 psycopg2==2.9.3
 pylint==2.4.4
-pytz==2019.3
+pytz~=2022.6
 requests==2.23.0
 six==1.14.0
 soupsieve==2.2.1
@@ -21,3 +21,4 @@ urllib3==1.25.11
 vk-api==11.9.4
 wget==3.2
 wrapt==1.11.2
+pandas~=1.5.1
