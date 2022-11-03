@@ -26,6 +26,10 @@ class Phrase(Base):
         return list(map(str, session.query(Phrase).all()))
 
     @staticmethod
+    def get_all():
+        return session.query(Phrase).all()
+
+    @staticmethod
     def get_all_str():
         phrase_list = Phrase.get_all_list()
         return func.reduce(lambda a, b: a+b, phrase_list) if len(phrase_list) > 0 else ""
