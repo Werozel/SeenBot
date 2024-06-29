@@ -1,3 +1,4 @@
+import constants
 from libs.Handler import Handler
 from globals import api, get_rand, pool, session_factory, format_time, log, get_attachments, intersection, \
     session, sort_sizes
@@ -33,6 +34,8 @@ def get_optimal_pair(sizes: list, pic_id: int):
 
 
 def was_seen(sizes_with_links: list) -> dict:
+    if not constants.IS_SEEN_CHECK_AVAILABLE:
+        return {'result': False, 'simpic': None}
     local_session = session_factory()
 
     # Checking whether a link is already in DB
@@ -87,7 +90,7 @@ def process_pic(msg) -> None:
     sender_id = msg.get('from_id')
     # Getting the user from DB or creating a new one
     user: User = outer_session.query(User).filter(User.id == sender_id).first()
-    if not User:
+    if not user:
         user = User(sender_id)
         outer_session.add(user)
         outer_session.commit()
