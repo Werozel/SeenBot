@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 
 from globals import Base, timestamp, session
 from sqlalchemy import Column, Integer, VARCHAR, TIMESTAMP, ForeignKey
@@ -14,11 +15,11 @@ class PicMessage(Base):
     time = Column(TIMESTAMP, default=timestamp())
     text = Column(VARCHAR, default='')
 
-    def __init__(self, user_id, picture_id, text='', **kwargs):
+    def __init__(self, user_id, picture_id, text='', time: datetime = None, **kwargs):
         super(PicMessage, self).__init__(**kwargs)
         self.user_id = user_id
         self.pic_id = picture_id
-        self.time = timestamp()
+        self.time = time if time else timestamp()
         self.text = text
 
     @staticmethod

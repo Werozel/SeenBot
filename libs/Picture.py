@@ -31,14 +31,14 @@ class Picture(Base):
     msg_rel = relationship("PicMessage", backref="picture")
     downloaded_pic_rel = relationship("DownloadedPic", backref='picture')
 
-    def __init__(self, id: int, user_id: int, owner_id: int, access_key: str, **kwargs):
+    def __init__(self, id: int, user_id: int, owner_id: int, access_key: str, time: datetime.datetime = None, **kwargs):
         super(Picture, self).__init__(**kwargs)
         self.id = id
         self.ups = self.downs = self.bads = 0
         self.user_id = user_id
         self.owner_id = owner_id
         self.access_key = access_key
-        self.add_time = timestamp()
+        self.add_time = time if time else timestamp()
 
     @staticmethod
     def get(id: int, local_session=session):

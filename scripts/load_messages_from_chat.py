@@ -11,6 +11,7 @@ import constants
 import pprint
 import time
 from src.handler_func import handle_only_karma
+import datetime
 
 
 def handle_message(msg: dict) -> None:
@@ -24,7 +25,9 @@ def handle_message(msg: dict) -> None:
     )
     for pic in all_pictures:
         pic_id = pic.get("id")
-        if session.query(Picture).filter(Picture.id == pic_id).first():
+        pic_date = msg.get("date")
+        existing_pic = session.query(Picture).filter(Picture.id == pic_id).first()
+        if existing_pic:
             continue
         sender_id = msg.get("from_id")
         if sender_id == constants.COMMUNITY_ID:
@@ -35,18 +38,33 @@ def handle_message(msg: dict) -> None:
             session.add(user)
             session.commit()
         picture = Picture(
-            pic_id,
-            sender_id,
-            pic.get('owner_id'),
-            pic.get('access_key')
+            id=pic_id,
+            user_id=sender_id,
+            owner_id=pic.get('owner_id'),
+            access_key=pic.get('access_key'),
+            time=datetime.datetime.fromtimestamp(pic_date)
         )
         session.add(picture)
         session.commit()
 
         sizes = pic.get("sizes")
         for size in sizes:
-            session.add(PictureSize(pic_id, size.get('type'), size.get('url')))
-        session.add(PicMessage(sender_id, pic_id, msg.get('text')))
+            session.add(
+                PictureSize(
+                    picture_id=pic_id,
+                    size=size.get('type'),
+                    link=size.get('url'),
+                    time=datetime.datetime.fromtimestamp(pic_date)
+                )
+            )
+        session.add(
+            PicMessage(
+                user_id=sender_id,
+                picture_id=pic_id,
+                text=msg.get('text'),
+                time=datetime.datetime.fromtimestamp(pic_date)
+            )
+        )
         session.commit()
     session.close()
 
@@ -57,6 +75,7 @@ if __name__ == "__main__":
     )
 
     last_loaded_date = 1639652562
+    # last_loaded_date = 1718178900
 
     curr_offset = 0
     load_chunk_count = 100
