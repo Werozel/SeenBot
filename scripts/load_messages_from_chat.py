@@ -71,15 +71,17 @@ if __name__ == "__main__":
             rev=0,
             externded=1,
         )
+        msg_date = None
         for msg in messages.get("items"):
-            if msg.get("date") <= last_loaded_date:
+            msg_date = msg.get("date")
+            if msg_date <= last_loaded_date:
                 exiting = True
                 break
 
             handle_message(msg)
             # handle_only_karma(msg)
         curr_offset += load_chunk_count
-        print(f"Loaded {curr_offset} messages")
+        print(f"Loaded {curr_offset} messages, last date = {msg_date}")
         time.sleep(2.5)
 
     pprint.pprint(curr_offset)
