@@ -81,7 +81,7 @@ if __name__ == "__main__":
             handle_message(msg)
             # handle_only_karma(msg)
         curr_offset += load_chunk_count
-        print(f"Loaded {curr_offset} messages, last date = {msg_date}")
+        print(f"Loaded {curr_offset} messages, last date = {globals.format_timestamp(msg_date)}")
         time.sleep(2.5)
 
     pprint.pprint(curr_offset)

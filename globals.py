@@ -11,6 +11,7 @@ import signal
 import pytz
 import re
 import constants
+from time import strftime, localtime
 
 engine = create_engine(f"postgresql://{config.db_username}:{config.db_password}@"
                        f"{config.db_host}:{config.db_port}/{config.db_name}")
@@ -48,6 +49,10 @@ def format_time(date: datetime.datetime) -> str:
 
 def format_vrp_time(date: datetime.datetime) -> str:
     return date.strftime("%d %b %Y")
+
+
+def format_timestamp(timestamp: int) -> str:
+    return strftime('%Y-%m-%d %H:%M:%S', localtime(timestamp))
 
 
 def days_between(date1: datetime.datetime, date2: datetime.datetime) -> int:
