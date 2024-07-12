@@ -31,6 +31,10 @@ if __name__ == "__main__":
         except TimeoutError:
             print(traceback.format_exc())
             pass
+        except KeyboardInterrupt:
+            exiting = True
+            print(traceback.format_exc())
+            break
         except Exception:
             print(traceback.format_exc())
             break

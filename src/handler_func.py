@@ -18,6 +18,11 @@ from src.handlers.tops.users_best_handler import handler as users_best_handler
 from src.handlers.mashups.random_mashup_handler import handler as random_mashup_handler
 
 handlers = []
+karma_handlers = [
+    add_positive_karma,
+    add_negative_karma,
+    bads_handler,
+]
 
 
 def add_handler(handler: Handler):
@@ -26,6 +31,11 @@ def add_handler(handler: Handler):
 
 def handle_msg(msg):
     for handler in handlers:
+        handler.handle_message(msg)
+
+
+def handle_only_karma(msg):
+    for handler in karma_handlers:
         handler.handle_message(msg)
 
 
