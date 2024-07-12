@@ -95,10 +95,18 @@ class Picture(Base):
             .all()
 
     @staticmethod
-    def get_best_for_user(user_id, local_session: Session = session, limit: int = None) -> List['Picture']:
+    def get_best_for_user(
+            user_id,
+            start_dt: datetime.datetime,
+            local_session: Session = session,
+            limit: int = None,
+    ) -> List['Picture']:
         return local_session \
             .query(Picture) \
             .filter(Picture.user_id == user_id) \
+            .filter(
+                Picture.add_time > start_dt
+            ) \
             .order_by(
                 -(Picture.ups / (Picture.downs + 1)) * (Picture.ups + Picture.downs),
                 desc(Picture.add_time)

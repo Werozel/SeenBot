@@ -1,6 +1,6 @@
 from typing import Optional
 
-from globals import api, get_rand, session_factory
+from globals import api, get_rand, session_factory, get_month_start
 from libs.User import User
 from libs.Handler import Handler
 from libs.Picture import Picture
@@ -16,7 +16,8 @@ def process_func(msg):
     local_session = session_factory()
     user_id: int = msg.get('from_id')
     user: Optional[User] = User.get(user_id, local_session)
-    best_pictures = Picture.get_best_for_user(user_id, local_session, limit=10)
+    month_start_dt = get_month_start()
+    best_pictures = Picture.get_best_for_user(user_id, month_start_dt, local_session, limit=10)
     attachment_strings = list(
         map(
             lambda x: x.get_api_string(peer_id),
