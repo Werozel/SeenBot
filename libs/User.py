@@ -54,7 +54,7 @@ class User(Base):
 
     @staticmethod
     def get_all(local_session=session) -> List['User']:
-        return session.query(User).all()
+        return local_session.query(User).all()
 
     def get_pics(self, local_session=session):
         return local_session.query(Picture).filter(Picture.id == self.id).all()
