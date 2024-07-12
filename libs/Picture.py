@@ -3,7 +3,7 @@ from typing import Optional, List
 
 from sqlalchemy import Column, Integer, ForeignKey, TIMESTAMP, String
 from sqlalchemy.orm import relationship, Session
-from sqlalchemy.sql.expression import func
+from sqlalchemy.sql.expression import func, desc
 
 from globals import Base, timestamp, session, vk_upload
 from libs.PictureSize import PictureSize
@@ -100,8 +100,9 @@ class Picture(Base):
             .query(Picture) \
             .filter(Picture.user_id == user_id) \
             .order_by(
-                -(Picture.ups / (Picture.downs + 1)) * (Picture.ups + Picture.downs)
-            )\
+                -(Picture.ups / (Picture.downs + 1)) * (Picture.ups + Picture.downs),
+                desc(Picture.add_time)
+            ) \
             .limit(limit) \
             .all()
 
